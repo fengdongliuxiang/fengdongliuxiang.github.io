@@ -9,7 +9,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            归档
+            Flutter仿网易云音乐（一）
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,15 +32,32 @@
 <meta name="generator" content="Hexo 7.1.1"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/archive.css">
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
 <div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-subtitle">归档</h1>
+                <h1 class="header-subtitle">Flutter仿网易云音乐（一）</h1>
                 <div class="header-subinfo">
-                    <p class="article-info-text Chinese"></p>
-                    <p class="article-info-text English"></p>                  
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2024-03-02
+                        </span>
+                        
+                            
+                                <span id="/2024/03/02/Flutter仿网易云音乐（一）/" class="leancloud_visitors" data-flag-title="Flutter仿网易云音乐（一）">
+                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                                </span>
+                            
+                            
+                                <span>
+                                    <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/2024/03/02/Flutter仿网易云音乐（一）/"></span>
+                                </span>
+                              
+                        
+                    </p>
+                    
+                    
                 </div>
             
         </div>
@@ -49,41 +66,64 @@
 </div>
 <div id="container">
     
-        
-            <!-- 归档页面、分类归档页面、标签归档页面 -->
-            <div class="articles">
-                <div class="articles-wrap">
-                    <span class="archive-move-on"></span>
-                    <span class="archive-counter">
-                        
-                            目前共计 1 篇日志，继续加油！
-                        
-                    </span>
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <p>一、首先搭建好网易云音乐api，参考链接<a target="_blank" rel="noopener" href="https://binaryify.github.io/NeteaseCloudMusicApi/#/?id=neteasecloudmusicapi%E3%80%82">https://binaryify.github.io/NeteaseCloudMusicApi/#/?id=neteasecloudmusicapi。</a></p>
+<p>二、先实现音乐播放功能，这里选择的是audioplayers插件，能通过链接播放网络音乐。由于使用了Getx插件，代码模块会和通常语法有些出入，请注意甄别。<br><code>var audioPlayer = AudioPlayer(mode: PlayerMode.MEDIA_PLAYER).obs; //音频播放器</code><br><code>var currentProgress=0.0.obs;//当前播放进度</code></p>
+<p>创建歌曲类，属性如下：<br><code>/// 歌曲详情</code><br><code>class SongsDetail &#123;</code><br><code>int? id;//歌曲唯一标识</code><br><code>String? name;//歌名</code><br><code>List&lt;Artist&gt;? ar;//上传者信息，要再创建一个数据模型</code><br><code>Al? al;//忘了是啥，里面有歌曲封面图，要再创建一个数据模型</code></p>
+<p>  <code>SongsDetail(&#123;this.id, this.name, this.ar,this.al&#125;);</code>  </p>
+<p>  <code>SongsDetail.fromJson(Map&lt;String, dynamic&gt; json) &#123;</code><br>    <code>name = json[&#39;name&#39;];</code><br>    <code>id = json[&#39;id&#39;];</code><br>    <code>if (json[&#39;ar&#39;] != null) &#123;</code><br>      <code>ar = [];</code><br>      <code>json[&#39;ar&#39;].forEach((v) &#123;</code><br>        <code>ar!.add(Artist.fromJson(v));</code><br>      <code>&#125;);</code><br>    <code>&#125;</code><br>    <code>al = Al.fromJson(json[&#39;al&#39;]);</code><br>  <code>&#125;</code><br><code>&#125;</code><br>以上为接口返回字段，具体以api返回为准。</p>
+<p><code>audioPlayer.value.setReleaseMode(ReleaseMode.LOOP);//初始化为循环播放</code></p>
+<p>三、通常情况下，音乐播放器会在全局生效，所以我们需要通过跨页面通信来获取音乐播放器的状态。这里使用event_bus插件，通过它的事件总线功能可以实现状态更新，消息传递。用法也很简单，为不同的事件定义相对应的Code值，每个事件只会相应对应值的事件，这里应用如下：<br><code>audioPlayer.value.onAudioPositionChanged.listen((event) async&#123;</code><br>  <code>int current=await audioPlayer.value.getCurrentPosition();//当前播放进度</code><br>  <code>int total=await audioPlayer.value.getDuration();//总进度</code><br>  <code>currentProgress.value=current/total;</code><br>  <code>Map map=Map();</code><br>  <code>map[&#39;current&#39;]=current.toDouble();</code><br>  <code>map[&#39;total&#39;]=total.toDouble();</code><br>  <code>eventBus.fire(EventObj(code: 10005, obj: map));</code>  <code>//广播事件</code><br><code>&#125;);</code><br>通过audioplayer自身的功能获取播放进度，然后通过eventbus广播传递，在其他页面就能通过10005这个Code值捕获这个广播事件，从而获得map值，这里用来实现其他页面的进度条功能。<br>捕获事件代码如下：<br><code>late StreamSubscription _subscription;</code><br><code>_subscription = eventBus.on().listen((event) &#123;</code><br>  <code>EventObj eventObj = event;</code><br>  <code>if (eventObj.code == 10005) &#123;</code><br>    <code>if (!controller.seeking.value) &#123;</code><br>      <code>Map map = eventObj.obj;</code><br>      <code>controller.currentDuration.value = map[&#39;current&#39;];</code><br>      <code>controller.totalDuration.value = map[&#39;total&#39;];</code><br>      <code>controller.currentDuration.refresh();</code><br>      <code>controller.totalDuration.refresh();</code><br>    <code>&#125;</code><br>  <code>&#125;</code><br><code>&#125;);</code><br>同理，播放器暂停&#x2F;开始播放时也可以通过eventbus来传递信息：<br><code>audioPlayer.value.onPlayerStateChanged.listen((event) &#123;</code><br>  <code>eventBus.fire(EventObj(code: 10003, obj: event));</code><br><code>&#125;);</code></p>
+<p>四、播放功能，首先获取歌曲id：<br><code>var dio = Dio();</code><br><code>var response = await dio.post(NeteaseCommon.server_url+&#39;/check/music?id=$&#123;searchResult.id&#125;&#39;).catchError((error) &#123;</code><br>  <code>Fluttertoast.showToast(msg: &#39;无法获取歌曲链接&#39;, toastLength: Toast.LENGTH_SHORT, backgroundColor: Colors.black);</code><br><code>&#125;);</code><br><code>if (response.data[&#39;success&#39;]) &#123;</code><br>  <code>var response = await dio.post(NeteaseCommon.server_url+&#39;/song/detail?ids=$&#123;searchResult.id&#125;&#39;).catchError((error)&#123;</code><br>    <code>Fluttertoast.showToast(msg: &#39;无法获取歌曲链接&#39;, toastLength: Toast.LENGTH_SHORT, backgroundColor: Colors.black);</code><br>  <code>&#125;);</code><br>  <code>List songsDetailList=response.data[&#39;songs&#39;];</code><br>  <code>SongsDetail songsDetail=SongsDetail.fromJson(songsDetailList[0]);</code><br>  接口返回类型自己注意，往后就不赘述了。Dio是网络请求插件，这里是最原始的用法，可以自行封装。<br>  获取歌曲信息后直接用url播放<br>  <code>audioPlayer.value.play(&#39;https://music.163.com/song/media/outer/url?id=$&#123;songsDetail.id&#125;.mp3&#39;);</code><br>  暂停播放<br>  <code>audioPlayer.value.pause().then((value) &#123;</code><br>  <code>audioPlayer.refresh();</code><br><code>&#125;);</code><br>  继续播放<br>  <code>audioPlayer.value.resume().then((value) &#123;</code><br>  <code>audioPlayer.refresh();</code><br><code>&#125;);</code><br>以上就是本篇文章的全部内容，值得注意的是，由于网易云音乐的音乐播放器是全局的，因此本项目会大量应用eventbus来传递信息，如果各位有更好的建议，欢迎评论留言，感谢观看。</p>
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/1.jpg" alt="风动留香">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>风动留香
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/2024/03/02/Flutter%E4%BB%BF%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90%EF%BC%88%E4%B8%80%EF%BC%89/" target="_blank">Flutter仿网易云音乐（一）</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>三人行，必有我师焉.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                
+                <div class="article-prev-next">
                     
-                    
-                        
-                            <div class="archive-title">
-                                <h2 class="archive-year">2024</h2>
-                            </div>
-                            
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/2024/02/28/hello-world/"><span>Hello World</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">02-28</span>
-                                </div>
-                            </div>
-                        </div>
                     
                 </div>
             </div>
             
+    <div class="article-comments">
         
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
+    </div>
+    
+ 
+        </div>
     
 </div>
     <div id="footer">
-    <div><span class='face'>ღゝ◡╹)ノ♡</span></div><div>【人生若只如初见<span><i class='iconfont icon-like-fill'></i></span>何事秋风悲画扇】</div><div>&copy; 2020-2023 WorstOne. All Rights Reserved.</div>
+    <div><span class='face'>ღゝ◡╹)ノ♡</span></div><div>【并皆声犹远，深含曲未央】</div><div>&copy; 2020-2023 WorstOne. All Rights Reserved.</div>
 </div>
     <div id="sidebar">
     <div class="menu-wrap" style="display:none;">
@@ -91,19 +131,19 @@
             <div class="menu-notice">
                 <span class="iconfont icon-notice"></span>
                 <div class="notice">
-                    <span>简单地活着，肆意而又精彩！</span>
+                    <span>人生不相见，动如参与商。</span>
                 </div>
             </div>
         
         <nav class="menu">
             <div class="menu-introduce"> 
                 <div class="introduce-avatar">
-                    <img src="/image/sidebar/avatar.jpg">
+                    <img src="/image/sidebar/1.jpg">
                 </div> 
                 <div class="introduce-info"> 
                     <div class="introduce-user">
                         
-                            <a href="https://worstone.cn" target="_blank"><span>Live For Code</span></a>
+                            <a href="https://github.com/fengdongliuxiang" target="_blank"><span>风动留香</span></a>
                         
                     </div>
                 </div> 
@@ -117,7 +157,7 @@
                     
                         <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
                     
-                        <li class=" active "><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
+                        <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
                     
                         <li class=""><a href="/donate" class="" target="_self"><span class="iconfont icon-heart-fill"></span>赞赏</a></li>
                     
@@ -138,15 +178,15 @@
                     <div class="image-box"></div>
                 </div>
                 
-                    <a name="知乎" href="https://zhihu.com/people/worstone-29" class="" target="_blank" data=""><span class="iconfont icon-zhihu"></span></a>
+                    <a name="知乎" href="" class="" target="_blank" data=""><span class="iconfont icon-zhihu"></span></a>
                 
-                    <a name="微博" href="https://weibo.com/u/5749847477" class="" target="_blank" data=""><span class="iconfont icon-weibo"></span></a>
+                    <a name="微博" href="" class="" target="_blank" data=""><span class="iconfont icon-weibo"></span></a>
                 
-                    <a name="QQ" href="javascript:;" class="image" target="_self" data="/image/sidebar/qq.png"><span class="iconfont icon-qq"></span></a>
+                    <a name="QQ" href="javascript:;" class="image" target="_self" data=""><span class="iconfont icon-qq"></span></a>
                 
                     <a name="微信" href="javascript:;" class="" target="_self" data=""><span class="iconfont icon-wechat"></span></a>
                 
-                    <a name="GitHub" href="https://github.com/first19326" class="" target="_blank" data=""><span class="iconfont icon-github"></span></a>
+                    <a name="GitHub" href="https://github.com/fengdongliuxiang" class="" target="_blank" data=""><span class="iconfont icon-github"></span></a>
                 
             </div> 
         </nav>
@@ -254,15 +294,15 @@
 </div>
     <script>
     window.config = {
-        GitHubUserName     : "first19326",
-        GitHubRepositories : "Hexo-LiveForCode",
+        GitHubUserName     : "fengdongliuxiang",
+        GitHubRepositories : "fengdongliuxiang.github.io",
 
-        User             : "Live For Code",
-        UserAvatar       : "/image/sidebar/avatar.jpg",
-        WebsiteStartDate : "2020-01-01",
-        Home             : "https://worstone.cn",
+        User             : "风动留香",
+        UserAvatar       : "/image/sidebar/1.jpg",
+        WebsiteStartDate : "2024-03-02",
+        Home             : "https://github.com/fengdongliuxiang",
 
-        WebsiteTitleBlur         : "(◍´꒳`◍) Hi, Live For Code",
+        WebsiteTitleBlur         : "云飞凤台管，风动令君香。",
         WebsiteTitleBlurTimeOut  : 500,
         WebsiteTitleFocus        : "(*´∇｀*) 欢迎回来!",
         WebsiteTitleFocusTimeOut : 1000,
@@ -327,14 +367,16 @@
             
                 "/image/header/home.jpg",
             
-                "/image/header/home.jpeg",
+                "/image/header/2.jpg",
             
         ],
         HomeBannerText  : "",
 
         ArticleHeaderImage : [
             
-                "/image/header/article.jpg",
+                "/image/header/20180225101118_pxnco.jpg",
+            
+                "/image/header/jmxnrghaamyjmxnrghaamy.jpg",
             
         ],
 
@@ -364,7 +406,7 @@
 
         MenuNotice : {
             enable : true,
-            notice : "简单地活着，肆意而又精彩！",
+            notice : "人生不相见，动如参与商。",
             speed  : 20
         },
         MenuList : [
@@ -466,7 +508,7 @@
                     {
                         name   : "知乎",
                         icon   : "icon-zhihu",
-                        href   : "https://zhihu.com/people/worstone-29",
+                        href   : "",
                         class  : "",
                         target : "_blank",
                         image  : ""
@@ -475,7 +517,7 @@
                     {
                         name   : "微博",
                         icon   : "icon-weibo",
-                        href   : "https://weibo.com/u/5749847477",
+                        href   : "",
                         class  : "",
                         target : "_blank",
                         image  : ""
@@ -487,7 +529,7 @@
                         href   : "javascript:;",
                         class  : "image",
                         target : "_self",
-                        image  : "/image/sidebar/qq.png"
+                        image  : ""
                     },
                 
                     {
@@ -502,7 +544,7 @@
                     {
                         name   : "GitHub",
                         icon   : "icon-github",
-                        href   : "https://github.com/first19326",
+                        href   : "https://github.com/fengdongliuxiang",
                         class  : "",
                         target : "_blank",
                         image  : ""
@@ -512,7 +554,7 @@
         ],
 
         FooterStyle : 2,
-        BottomText  : "<div><span class='face'>ღゝ◡╹)ノ♡</span></div><div>【人生若只如初见<span><i class='iconfont icon-like-fill'></i></span>何事秋风悲画扇】</div><div>&copy; 2020-2023 WorstOne. All Rights Reserved.</div>",
+        BottomText  : "<div><span class='face'>ღゝ◡╹)ノ♡</span></div><div>【并皆声犹远，深含曲未央】</div><div>&copy; 2020-2023 WorstOne. All Rights Reserved.</div>",
 
         ConsoleList : [
             
@@ -555,8 +597,8 @@
         Donate : {
             paypal  : "",
             bitcoin : "",
-            alipay  : "/image/donate/alipay.png",
-            wechat  : "/image/donate/wechat.png"
+            alipay  : "",
+            wechat  : ""
         },
 
         Search : {
@@ -590,7 +632,7 @@
                 admin       : "博主",
                 anonymous   : "匿名用户",
                 sofa        : "快来做第一个评论的人吧 ~",
-                placeholder : "你是我一生只会遇见一次的惊喜...",
+                placeholder : "足下有何见解，不如坐而论道",
             },
             dark            : "html[color-scheme='dark']",
             search          : false,
@@ -604,7 +646,7 @@
             appId          : "srhKtvWPQTWYKh3qX8G8M7v0-gzGzoHsz",
             appKey         : "8uVSP1q6UlALVC5igYfIfv2h",
             serverURLs     : "",
-            placeholder    : "你是我一生只会遇见一次的惊喜...",
+            placeholder    : "足下有何见解，不如坐而论道",
             avatar         : "mm",
             meta           : "nick,mail,link",
             requiredFields : "nick,mail",
@@ -735,7 +777,7 @@
         },
 
         Suffix : {
-            about : "简单地活着, 肆意又精彩."
+            about : "三人行，必有我师焉."
         },
             
         Theme : {
