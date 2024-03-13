@@ -9,7 +9,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            Flutter仿网易云音乐（三）全局音乐播放栏
+            标签
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,36 +32,15 @@
 <meta name="generator" content="Hexo 7.1.1"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/post.css">
+    <link type="text/css" rel="stylesheet" href="/css/page.css">
 <div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-subtitle">Flutter仿网易云音乐（三）全局音乐播放栏</h1>
+                <h1 class="header-subtitle">标签</h1>
                 <div class="header-subinfo">
-                    <p class="article-info-text">
-                        <span>
-                            <i class="iconfont icon-time"></i> 发表时间：2024-03-04
-                        </span>
-                        
-                            
-                                <span id="/2024/03/04/Flutter仿网易云音乐（三）全局音乐播放栏/" class="leancloud_visitors" data-flag-title="Flutter仿网易云音乐（三）全局音乐播放栏">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            
-                                <span>
-                                    <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/2024/03/04/Flutter仿网易云音乐（三）全局音乐播放栏/"></span>
-                                </span>
-                              
-                        
-                    </p>
-                    
-                        
-                            <span class="category-color">Flutter</span>
-                        
-                    
-                    
+                    <p class="article-info-text Chinese"></p>
+                    <p class="article-info-text English"></p>                  
                 </div>
             
         </div>
@@ -70,88 +49,22 @@
 </div>
 <div id="container">
     
-        <!-- 文章页面 -->
-        <div id="article">
-            <div class="toc"></div>
-            <div class="article-body">
-                <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>网易云音乐ios端和android端底部的音乐栏几乎都覆盖了所有页面，但是还是有些许不同：</p>
-<p><img src="/2024/03/04/Flutter%E4%BB%BF%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90%EF%BC%88%E4%B8%89%EF%BC%89%E5%85%A8%E5%B1%80%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE%E6%A0%8F/2.gif" alt="2"></p>
-<p><img src="/2024/03/04/Flutter%E4%BB%BF%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90%EF%BC%88%E4%B8%89%EF%BC%89%E5%85%A8%E5%B1%80%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE%E6%A0%8F/4.gif" alt="3"></p>
-<p>从上图可以看出ios端的音乐栏在页面切换时总是固定的，而android端则有一个较为明显的路由切换动画。</p>
-<p>在编程开始之前，先来了解一下在Android原生中是如何实现的，知乎文章：<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/36448929?utm_id=0">https://www.zhihu.com/question/36448929?utm_id=0</a></p>
-<p>从最高赞回答中可以知晓，在Android原生中实现固定音乐栏的方法，就是在每个activity都写一个音乐栏…</p>
-<p>呃…这种方法不说繁琐，简直就是麻烦。没有批评网易大佬的意思，也许他们有更多的考量。</p>
-<p>那么如果在flutter实现固定音乐栏的话，有没有更简单的方法呢。</p>
-<p><img src="/2024/03/04/Flutter%E4%BB%BF%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90%EF%BC%88%E4%B8%89%EF%BC%89%E5%85%A8%E5%B1%80%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE%E6%A0%8F/1.png" alt="1"></p>
-<p><em><strong>悬浮窗</strong></em></p>
-<p>的确，如果创建一个固定位置的悬浮窗的话，实现出来的效果应该会和ios端更贴近，即页面跳转时无路由动画。</p>
-<p>那么应该怎么实现悬浮窗呢？</p>
-<p>最简单的方法就是OverlayEntry了。</p>
-<h3 id="一、封装一个OverlayEntry"><a href="#一、封装一个OverlayEntry" class="headerlink" title="一、封装一个OverlayEntry"></a>一、封装一个OverlayEntry</h3><p>音乐栏全局有且只有一个，因此使用工厂模式创建单例类：</p>
-<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MusicBar</span> </span>&#123;</span><br><span class="line">  <span class="keyword">static</span> <span class="keyword">final</span> MusicBar _instance = MusicBar._();</span><br><span class="line">  <span class="keyword">factory</span> MusicBar() =&gt; _instance;</span><br><span class="line">  MusicBar._();</span><br><span class="line">  </span><br><span class="line">  <span class="comment">///<span class="language-markdown">显示音乐栏</span></span></span><br><span class="line">  OverlayEntry? overlayEntry;</span><br><span class="line">  <span class="keyword">show</span>(BuildContext context,Widget child,&#123;<span class="built_in">double?</span> top,<span class="built_in">double?</span> left&#125;) &#123;</span><br><span class="line">    <span class="keyword">if</span> (overlayEntry == <span class="keyword">null</span>) &#123;</span><br><span class="line">      overlayEntry = OverlayEntry(builder: (BuildContext context) &#123;</span><br><span class="line">        <span class="keyword">return</span> MusicBarWidget(</span><br><span class="line">          top: top??<span class="number">100</span>,</span><br><span class="line">          left: left??<span class="number">100</span>,</span><br><span class="line">          child: child,</span><br><span class="line">        );</span><br><span class="line">      &#125;);</span><br><span class="line">      Overlay.of(context)?.insert(overlayEntry!);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">///<span class="language-markdown">隐藏音乐栏</span></span></span><br><span class="line">  <span class="keyword">void</span> <span class="keyword">hide</span>() &#123;</span><br><span class="line">    overlayEntry?.remove();</span><br><span class="line">    overlayEntry = <span class="keyword">null</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="二、封装悬浮窗Widget"><a href="#二、封装悬浮窗Widget" class="headerlink" title="二、封装悬浮窗Widget"></a>二、封装悬浮窗Widget</h3><p>网易云音乐首页音乐栏下面还有个导航栏，当路由至其他界面时导航栏消失，这时音乐栏的下方就会空出一片地方。参考ios的处理方法，我添加了一段下沉动画，而回到首页时再上浮回来，同样用eventbus广播。</p>
-<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">_MusicBarWidgetState</span> <span class="keyword">extends</span> <span class="title">State</span>&lt;<span class="title">MusicBarWidget</span>&gt;</span></span><br><span class="line"><span class="class">    <span class="title">with</span> <span class="title">TickerProviderStateMixin</span> </span>&#123;</span><br><span class="line">  AnimationController? _controller;</span><br><span class="line">  <span class="built_in">double</span> left = <span class="number">0</span>;</span><br><span class="line">  <span class="built_in">double</span> top = <span class="number">0</span>;</span><br><span class="line">  <span class="built_in">double</span> maxX = <span class="number">0</span>;</span><br><span class="line">  <span class="built_in">double</span> maxY = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">var</span> parentKey = GlobalKey();</span><br><span class="line">  <span class="keyword">var</span> childKey = GlobalKey();</span><br><span class="line">  <span class="keyword">var</span> parentSize = <span class="keyword">const</span> Size(<span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">  <span class="keyword">var</span> childSize = <span class="keyword">const</span> Size(<span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">  <span class="keyword">late</span> StreamSubscription _subscription;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@override</span></span><br><span class="line">  <span class="keyword">void</span> initState() &#123;</span><br><span class="line">    _subscription = eventBus.<span class="keyword">on</span>().listen((event) &#123;</span><br><span class="line">      EventObj eventObj = event;</span><br><span class="line">      <span class="keyword">if</span> (eventObj.code == EventCode.toBottom) &#123;</span><br><span class="line">        toBottom();</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (eventObj.code == EventCode.riseUp) &#123;</span><br><span class="line">        riseUp();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    left = widget.left;</span><br><span class="line">    top = widget.top;</span><br><span class="line">    WidgetsBinding.instance.addPostFrameCallback((d) &#123;</span><br><span class="line">      parentSize = getWidgetSize(parentKey);</span><br><span class="line">      childSize = getWidgetSize(childKey);</span><br><span class="line">      maxX = parentSize.width - childSize.width;</span><br><span class="line">      maxY = parentSize.height - childSize.height;</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">super</span>.initState();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@override</span></span><br><span class="line">  <span class="keyword">void</span> dispose() &#123;</span><br><span class="line">    _controller?.dispose();</span><br><span class="line">    <span class="keyword">super</span>.dispose();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@override</span></span><br><span class="line">  Widget build(BuildContext context) &#123;</span><br><span class="line">    <span class="keyword">return</span> Stack(</span><br><span class="line">      key: parentKey,</span><br><span class="line">      fit: StackFit.expand,</span><br><span class="line">      children: [</span><br><span class="line">        Positioned(</span><br><span class="line">          key: childKey,</span><br><span class="line">          left: left,</span><br><span class="line">          top: top,</span><br><span class="line">          child: widget.child,</span><br><span class="line">        )</span><br><span class="line">      ],</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">//底部导航栏消失时沉底</span></span><br><span class="line">  <span class="keyword">void</span> toBottom() &#123;</span><br><span class="line">    _controller = AnimationController(vsync: <span class="keyword">this</span>)..duration = widget.duration;</span><br><span class="line">    <span class="keyword">var</span> animation = Tween&lt;<span class="built_in">double</span>&gt;(begin: top, end: maxY).animate(_controller!);</span><br><span class="line">    animation.addListener(() &#123;</span><br><span class="line">      top = animation.value;</span><br><span class="line">      setState(() &#123;&#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">    _controller!.forward();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">//底部导航栏出现时抬高</span></span><br><span class="line">  <span class="keyword">void</span> riseUp() &#123;</span><br><span class="line">    _controller = AnimationController(vsync: <span class="keyword">this</span>)..duration = widget.duration;</span><br><span class="line">    <span class="keyword">var</span> animation =</span><br><span class="line">        Tween&lt;<span class="built_in">double</span>&gt;(begin: top, end: maxY - <span class="number">56</span>).animate(_controller!);</span><br><span class="line">    animation.addListener(() &#123;</span><br><span class="line">      top = animation.value;</span><br><span class="line">      setState(() &#123;&#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">    _controller!.forward();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  Size getWidgetSize(GlobalKey key) &#123;</span><br><span class="line">    <span class="keyword">final</span> RenderBox renderBox =</span><br><span class="line">        key.currentContext?.findRenderObject() <span class="keyword">as</span> RenderBox;</span><br><span class="line">    <span class="keyword">return</span> renderBox.size;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h3 id="三、使用方法"><a href="#三、使用方法" class="headerlink" title="三、使用方法"></a>三、使用方法</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">MusicBar smallWindowManager = MusicBar();</span><br><span class="line">smallWindowManager.show(</span><br><span class="line">    context,</span><br><span class="line">    _musicBar(size,smallWindowManager,context),top: size.height-ScreenUtil().setWidth(70)-56,left: 0);</span><br><span class="line">//_musicBar()为Widget，样式自己编写</span><br></pre></td></tr></table></figure>
-
-<p>虽然这样子实现的悬浮窗不受路由影响，但是在某些页面需要隐藏的情况下也需要注意显示隐藏的逻辑，在特定的生命周期进行显示隐藏。</p>
-<p>最后来张效果图</p>
-<p><img src="/2024/03/04/Flutter%E4%BB%BF%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90%EF%BC%88%E4%B8%89%EF%BC%89%E5%85%A8%E5%B1%80%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE%E6%A0%8F/3.gif" alt="4"></p>
-
-                
-                <p class="end">__END__</p>
-            </div>
-            <div class="article-footer">
-                <div class="suffix-box">
-    <div class="suffix-box-left">
-        <img src="/image/sidebar/1.jpg" alt="风动留香">
-    </div>
-    <div class="suffix-box-right">
-        <span class="suffix-box-title">文章作者：</span>风动留香
-        <br>
-        <span class="suffix-box-title">文章出处：</span><a href="/2024/03/04/Flutter%E4%BB%BF%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90%EF%BC%88%E4%B8%89%EF%BC%89%E5%85%A8%E5%B1%80%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE%E6%A0%8F/" target="_blank">Flutter仿网易云音乐（三）全局音乐播放栏</a>
-        <br>
-        <span class="suffix-box-title">作者签名：</span>三人行，必有我师焉.
-        <br>
-        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
-        <br>
-        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
-        <br>
-    </div>
-    <div style="clear: both;"></div>
-</div>
-                
-                    <div class="category">
-                        分类：
-                        
-                            <a href="/category/Flutter/">Flutter</a>
-                        
+        <!-- 独立页面 -->
+        
+            <div class="tags">
+                <div class="tags-title">
+                    目前共计 1 个标签
+                </div>
+                <div class="tags-content">
+                    <div class="tags-light">
+                        <a href="/tags/ios/" style="font-size: 12px; color: #ccc">ios</a>
                     </div>
-                
-                
-                <div class="article-prev-next">
-                    
-                        <a href="/2024/03/12/Mac%E7%AB%AFAndroidStudio%E6%A3%80%E6%B5%8B%E4%B8%8D%E5%88%B0%E8%AE%BE%E5%A4%87%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95/" class="prev-prefix">« </a> 上一篇：    <a href="/2024/03/12/Mac%E7%AB%AFAndroidStudio%E6%A3%80%E6%B5%8B%E4%B8%8D%E5%88%B0%E8%AE%BE%E5%A4%87%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95/" title="发布于 2024-03-12 10:46">Mac端AndroidStudio检测不到设备解决办法</a>
-                        <br>
-                    
-                    
-                        <a href="/2024/03/03/Flutter%E4%BB%BF%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90%EF%BC%88%E4%BA%8C%EF%BC%89%E6%92%AD%E6%94%BE%E7%95%8C%E9%9D%A2/" class="next-prefix">» </a> 下一篇：    <a href="/2024/03/03/Flutter%E4%BB%BF%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90%EF%BC%88%E4%BA%8C%EF%BC%89%E6%92%AD%E6%94%BE%E7%95%8C%E9%9D%A2/" title="发布于 2024-03-03 04:30">Flutter仿网易云音乐（二）播放界面</a>
-                    
+                    <div class="tags-dark">
+                        <a href="/tags/ios/" style="font-size: 12px; color: #666">ios</a>
+                    </div>
                 </div>
             </div>
-            
-    <div class="article-comments">
         
-            <div class="comments-title">
-                评论列表
-            </div>
-        
-        <div class="comments-content"></div>
-    </div>
-    
- 
-        </div>
     
 </div>
     <div id="footer">
@@ -187,7 +100,7 @@
                     
                         <li class=""><a href="/category" class="" target="_self"><span class="iconfont icon-folder-fill"></span>分类</a></li>
                     
-                        <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
+                        <li class=" active "><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
                     
                         <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
                     
