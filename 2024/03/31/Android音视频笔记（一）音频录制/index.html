@@ -75,6 +75,9 @@
             <div class="toc"></div>
             <div class="article-body">
                 <h3 id="一、音频录制AudioRecord"><a href="#一、音频录制AudioRecord" class="headerlink" title="一、音频录制AudioRecord"></a>一、音频录制AudioRecord</h3><p>AudioRecord录制的输出格式为PCM，这种格式不能直接播放，但是Android原生也提供了AudioTrack，这使得我们可以在软件内部实现录制播放功能。</p>
+<p>首先添加权限</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;uses-permission android:name=<span class="string">&quot;android.permission.WRITE_EXTERNAL_STORAGE&quot;</span> /&gt;</span><br><span class="line">&lt;uses-permission android:name=<span class="string">&quot;android.permission.RECORD_AUDIO&quot;</span> /&gt;</span><br><span class="line">&lt;uses-permission android:name=<span class="string">&quot;android.permission.READ_EXTERNAL_STORAGE&quot;</span> /&gt;</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">int frequency = 48000;//采样率</span><br><span class="line">int channelConfig = AudioFormat.CHANNEL_IN_MONO;//声道配置</span><br><span class="line">int audioFormat = AudioFormat.ENCODING_PCM_16BIT;//音频格式</span><br></pre></td></tr></table></figure>
 
 <p>以上是AudioRecord的参数配置。</p>
@@ -118,6 +121,9 @@
                 
                 
                 <div class="article-prev-next">
+                    
+                        <a href="/2024/03/31/Flutter%E6%B7%B7%E5%90%88%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98%EF%BC%88%E4%B8%80%EF%BC%89%E9%A1%B9%E7%9B%AE%E5%AF%BC%E5%85%A5/" class="prev-prefix">« </a> 上一篇：    <a href="/2024/03/31/Flutter%E6%B7%B7%E5%90%88%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98%EF%BC%88%E4%B8%80%EF%BC%89%E9%A1%B9%E7%9B%AE%E5%AF%BC%E5%85%A5/" title="发布于 2024-03-31 07:01">Flutter混合开发实战（一）项目导入</a>
+                        <br>
                     
                     
                         <a href="/2024/03/27/Java%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/" class="next-prefix">» </a> 下一篇：    <a href="/2024/03/27/Java%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/" title="发布于 2024-03-27 03:54">Java笔记（二）</a>
