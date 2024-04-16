@@ -9,7 +9,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            标签
+            Flutter混合开发实战（一）项目导入
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,15 +32,40 @@
 <meta name="generator" content="Hexo 7.1.1"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/page.css">
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
 <div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-subtitle">标签</h1>
+                <h1 class="header-subtitle">Flutter混合开发实战（一）项目导入</h1>
                 <div class="header-subinfo">
-                    <p class="article-info-text Chinese"></p>
-                    <p class="article-info-text English"></p>                  
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2024-02-14
+                        </span>
+                        
+                            
+                                <span id="/2024/02/14/Flutter混合开发实战（一）项目导入/" class="leancloud_visitors" data-flag-title="Flutter混合开发实战（一）项目导入">
+                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                                </span>
+                            
+                            
+                                <span>
+                                    <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/2024/02/14/Flutter混合开发实战（一）项目导入/"></span>
+                                </span>
+                              
+                        
+                    </p>
+                    
+                        
+                            <span class="category-color">Flutter</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">Android</span>
+                        
+                    
                 </div>
             
         </div>
@@ -49,22 +74,115 @@
 </div>
 <div id="container">
     
-        <!-- 独立页面 -->
-        
-            <div class="tags">
-                <div class="tags-title">
-                    目前共计 5 个标签
-                </div>
-                <div class="tags-content">
-                    <div class="tags-light">
-                        <a href="/tags/Android/" style="font-size: 18.5px; color: #6f6f6f">Android</a> <a href="/tags/BUG/" style="font-size: 12px; color: #ccc">BUG</a> <a href="/tags/ios/" style="font-size: 12px; color: #ccc">ios</a> <a href="/tags/%E7%AC%94%E8%AE%B0/" style="font-size: 25px; color: #111">笔记</a> <a href="/tags/%E9%9D%A2%E8%AF%95/" style="font-size: 12px; color: #ccc">面试</a>
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>首先得说明一下为什么要学习flutter和原生混合开发，起因是我之前面试了某大厂，本来一切都进行得很顺利，直到面试官问了我一句：“你有过混合开发的经验吗？”。我顿时呆住了，内心OS：我大flutter蒸蒸日上，遥遥领先，为啥要学混合开发。当然表面我只能硬着头皮说没有…不出意料的过了段时间我收到了邮件说我面试没有通过。所幸之前在面试结束时我问了面试官：“您觉得我哪方面需要补足一下？”，面试官当时愣了一会，然后说：“我觉得你可以学习一下混合开发，毕竟纯flutter是没有出路的。”，OMG我大flutter居然没有出路，刹那间我仿佛五雷轰顶，外焦里嫩，本来以为只要学会flutter，就能等着它自己发展壮大坐收渔利，没想到现实给了我沉痛一击。后来我在boss上浏览了大部分flutter岗位要求，有七八成是要求掌握java、kotlin、swift等语言的，剩下的也基本要求有相关原生经验。自此我便踏上了混合开发之路…</p>
+<h3 id="一、原生引入flutter模组"><a href="#一、原生引入flutter模组" class="headerlink" title="一、原生引入flutter模组"></a>一、原生引入flutter模组</h3><p>1、首先创建flutter module，这一步没什么好说的，模组项目注意要和原生项目同级目录，创建flutter项目的时候把这里的类型改成Module就欧了</p>
+<p><img src="/2024/02/14/Flutter%E6%B7%B7%E5%90%88%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98%EF%BC%88%E4%B8%80%EF%BC%89%E9%A1%B9%E7%9B%AE%E5%AF%BC%E5%85%A5/1.png" alt="1"></p>
+<p>2、在原生项目的project目录下找到settings.gradle文件，将以下代码复制进去，注意把fluttermix改成flutter模组的项目名，这里有个大佬写的是settingsDir.parentFile，但是我写进去后报错了，改成这样才能运行，报错的朋友可以改一下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">setBinding(new Binding([gradle: this]))</span><br><span class="line">evaluate(new File(</span><br><span class="line">        settingsDir.parentFile,</span><br><span class="line">        &#x27;fluttermix/.android/include_flutter.groovy&#x27;</span><br><span class="line">))</span><br></pre></td></tr></table></figure>
+
+<p>app级目录下找到build.gradle文件，在dependencies中添加依赖</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation project(&#x27;:flutter&#x27;)</span><br></pre></td></tr></table></figure>
+
+<p>补充说明一下，做完以上步骤sync时有人会报错（才不是我），大概率是jdk版本和gradle版本冲突导致的，也有可能是flutter sdk冲突，这时候最好上google找一下解决方法，国内这搜索引擎实在是一言难尽…还有最好把模组也单独跑一下，可能会遇到换源、gradle版本问题</p>
+<p>3、先试试能不能运行起来，如果可以再进行以下步骤</p>
+<p>在原生项目AndroidManifest文件的application层级里导入FlutterActivity</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;activity</span><br><span class="line">    android:name=&quot;io.flutter.embedding.android.FlutterActivity&quot;</span><br><span class="line">    android:configChanges=&quot;orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode&quot;</span><br><span class="line">    android:hardwareAccelerated=&quot;true&quot;</span><br><span class="line">    android:windowSoftInputMode=&quot;adjustResize&quot;</span><br><span class="line">    /&gt;</span><br></pre></td></tr></table></figure>
+
+<p>4、随便在一个点击事件里调用跳转</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">startActivity(</span><br><span class="line">        FlutterActivity.createDefaultIntent(ACTIVITY)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>这是默认跳转flutter 的main函数，如果成功了就代表引入成功了，后续再进行其他开发。</p>
+<h3 id="二、导入AAR包"><a href="#二、导入AAR包" class="headerlink" title="二、导入AAR包"></a>二、导入AAR包</h3><p>1、在模组项目里运行控制台，输入</p>
+<p><code>flutter build aar</code></p>
+<p>会得到以下输出</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">Consuming the Module</span><br><span class="line">  1. Open &lt;host&gt;\app\build.gradle</span><br><span class="line">  2. Ensure you have the repositories configured, otherwise add them:</span><br><span class="line"></span><br><span class="line">      String storageUrl = System.env.FLUTTER_STORAGE_BASE_URL ?: &quot;https://storage.googleapis.com&quot;</span><br><span class="line">      repositories &#123;</span><br><span class="line">        maven &#123;</span><br><span class="line">            url &#x27;E:\android studio\fluttermix\build\host\outputs\repo&#x27;</span><br><span class="line">        &#125;</span><br><span class="line">        maven &#123;</span><br><span class="line">            url &quot;$storageUrl/download.flutter.io&quot;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">  3. Make the host app depend on the Flutter module:</span><br><span class="line"></span><br><span class="line">    dependencies &#123;</span><br><span class="line">      debugImplementation &#x27;com.example.fluttermix:flutter_debug:1.0&#x27;</span><br><span class="line">      profileImplementation &#x27;com.example.fluttermix:flutter_profile:1.0&#x27;</span><br><span class="line">      releaseImplementation &#x27;com.example.fluttermix:flutter_release:1.0&#x27;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  4. Add the `profile` build type:</span><br><span class="line"></span><br><span class="line">    android &#123;</span><br><span class="line">      buildTypes &#123;</span><br><span class="line">        profile &#123;</span><br><span class="line">          initWith debug</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这其实是在教我们怎么引用aar</p>
+<p>2、在项目级setting.gradle中添加以下代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">dependencyResolutionManagement &#123;</span><br><span class="line">    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)</span><br><span class="line">    String storageUrl = System.env.FLUTTER_STORAGE_BASE_URL ?: &quot;https://storage.googleapis.com&quot;</span><br><span class="line">    repositories &#123;</span><br><span class="line">        google()</span><br><span class="line">        mavenCentral()</span><br><span class="line">        maven &#123;</span><br><span class="line">            url &#x27;E:/android studio/fluttermix/build/host/outputs/repo&#x27;</span><br><span class="line">        &#125;</span><br><span class="line">        maven &#123;</span><br><span class="line">            url &quot;$storageUrl/download.flutter.io&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>3、在app级build.gradle中添加以下代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">buildTypes &#123;</span><br><span class="line">    release &#123;</span><br><span class="line">        minifyEnabled false</span><br><span class="line">        proguardFiles getDefaultProguardFile(&#x27;proguard-android-optimize.txt&#x27;), &#x27;proguard-rules.pro&#x27;</span><br><span class="line">    &#125;</span><br><span class="line">    profile &#123;</span><br><span class="line">        initWith debug</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在dependencies中添加以下代码，注意替换名字</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">debugImplementation &#x27;com.example.fluttermix:flutter_debug:1.0&#x27;</span><br><span class="line">profileImplementation &#x27;com.example.fluttermix:flutter_profile:1.0&#x27;</span><br><span class="line">releaseImplementation &#x27;com.example.fluttermix:flutter_release:1.0&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>4、最后在AndroidManifest中引用，和导入模组的步骤一样，就不赘述了</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>虽然文章很短，但是我足足花了两天才运行起来，就是因为某些镜像问题导致的，不论是内网外网都找不到解决办法，后来还是看到了一篇不起眼的博客才解决的。所以大家碰上此类问题一定一定，千万千万要记录下来，省得下次抓瞎。</p>
+<p>这两种引入方式各有优劣，以下是官方文档原话：</p>
+<ol>
+<li><strong>AAR 集成</strong> AAR 机制可以为每个 Flutter 模块创建 Android AAR 作为依赖媒介。当你的宿主应用程序开发者不想安装 Flutter SDK 时，这是一个很好方案。但是每次修改都需要重新编译。</li>
+<li><strong>模块源码集成</strong> 直接将 Flutter 模块的源码作为子项目的依赖机制是一种便捷的一键式构建方案，但此时需要另外安装 Flutter SDK，这是目前 Android Studio IDE 插件使用的机制。</li>
+</ol>
+<p>总结一下就是aar适合团队使用，不用每个人都配置flutter，一人开发其他人导入aar后能直接用；而模组形式则要求开发者必须配置flutter sdk，但是胜在编写代码方便，哪里出错了直接打开模组文件改就行。</p>
+<p>目前尚不清楚大厂倾向于哪种方式，有了解的朋友可以在评论区说明一下，我也挺想知道的，感谢！</p>
+<p>最后的最后，叮嘱刚入门的朋友一句：</p>
+<p><strong>强烈建议跟着官方文档走一遍！！！</strong></p>
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/1.jpg" alt="风动留香">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>风动留香
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/2024/02/14/Flutter%E6%B7%B7%E5%90%88%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98%EF%BC%88%E4%B8%80%EF%BC%89%E9%A1%B9%E7%9B%AE%E5%AF%BC%E5%85%A5/" target="_blank">Flutter混合开发实战（一）项目导入</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>三人行，必有我师焉.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
+                        
+                            <a href="/category/Flutter/">Flutter</a>
+                        
                     </div>
-                    <div class="tags-dark">
-                        <a href="/tags/Android/" style="font-size: 18.5px; color: #aaa">Android</a> <a href="/tags/BUG/" style="font-size: 12px; color: #666">BUG</a> <a href="/tags/ios/" style="font-size: 12px; color: #666">ios</a> <a href="/tags/%E7%AC%94%E8%AE%B0/" style="font-size: 25px; color: #eee">笔记</a> <a href="/tags/%E9%9D%A2%E8%AF%95/" style="font-size: 12px; color: #666">面试</a>
+                
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tags/Android/">Android</a>
+                        
                     </div>
+                
+                <div class="article-prev-next">
+                    
+                        <a href="/2024/02/15/Flutter%E6%B7%B7%E5%90%88%E5%BC%80%E5%8F%91BUG%E6%95%B4%E7%90%86/" class="prev-prefix">« </a> 上一篇：    <a href="/2024/02/15/Flutter%E6%B7%B7%E5%90%88%E5%BC%80%E5%8F%91BUG%E6%95%B4%E7%90%86/" title="发布于 2024-02-15 05:27">Flutter混合开发BUG整理</a>
+                        <br>
+                    
+                    
+                        <a href="/2024/01/20/Android%E9%9F%B3%E8%A7%86%E9%A2%91%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89%E9%9F%B3%E9%A2%91%E5%BD%95%E5%88%B6/" class="next-prefix">» </a> 下一篇：    <a href="/2024/01/20/Android%E9%9F%B3%E8%A7%86%E9%A2%91%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89%E9%9F%B3%E9%A2%91%E5%BD%95%E5%88%B6/" title="发布于 2024-01-20 03:11">Android音视频笔记（一）音频录制</a>
+                    
                 </div>
             </div>
+            
+    <div class="article-comments">
         
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
+    </div>
+    
+ 
+        </div>
     
 </div>
     <div id="footer">
@@ -100,7 +218,7 @@
                     
                         <li class=""><a href="/category" class="" target="_self"><span class="iconfont icon-folder-fill"></span>分类</a></li>
                     
-                        <li class=" active "><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
+                        <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
                     
                         <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
                     

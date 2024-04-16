@@ -9,7 +9,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            标签
+            Java笔记
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,15 +32,40 @@
 <meta name="generator" content="Hexo 7.1.1"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/page.css">
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
 <div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-subtitle">标签</h1>
+                <h1 class="header-subtitle">Java笔记</h1>
                 <div class="header-subinfo">
-                    <p class="article-info-text Chinese"></p>
-                    <p class="article-info-text English"></p>                  
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2023-12-31
+                        </span>
+                        
+                            
+                                <span id="/2023/12/31/Java笔记/" class="leancloud_visitors" data-flag-title="Java笔记">
+                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                                </span>
+                            
+                            
+                                <span>
+                                    <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/2023/12/31/Java笔记/"></span>
+                                </span>
+                              
+                        
+                    </p>
+                    
+                        
+                            <span class="category-color">Java</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">笔记</span>
+                        
+                    
                 </div>
             
         </div>
@@ -49,22 +74,164 @@
 </div>
 <div id="container">
     
-        <!-- 独立页面 -->
-        
-            <div class="tags">
-                <div class="tags-title">
-                    目前共计 5 个标签
-                </div>
-                <div class="tags-content">
-                    <div class="tags-light">
-                        <a href="/tags/Android/" style="font-size: 18.5px; color: #6f6f6f">Android</a> <a href="/tags/BUG/" style="font-size: 12px; color: #ccc">BUG</a> <a href="/tags/ios/" style="font-size: 12px; color: #ccc">ios</a> <a href="/tags/%E7%AC%94%E8%AE%B0/" style="font-size: 25px; color: #111">笔记</a> <a href="/tags/%E9%9D%A2%E8%AF%95/" style="font-size: 12px; color: #ccc">面试</a>
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <p>  一、数组</p>
+<p>动态初始化：手动指定数组长度，由系统给出默认初始化值</p>
+<p>静态初始化：手动指定数组元素，由系统计算数组长度</p>
+<p>静态初始化：</p>
+<p><code>int[] array=new int[]&#123;11,22,33&#125;;</code></p>
+<p><code>int[] array=&#123;11,22,33&#125;;</code></p>
+<p>动态初始化：</p>
+<p><code>int[] array =new int[50];</code>&#x2F;&#x2F;赋值50个</p>
+<p>整数类型默认初始化值为0</p>
+<p>小数类型默认初始化值为0.0</p>
+<p>字符类型默认初始化值为‘&#x2F;u0000’空格</p>
+<p>布尔类型默认初始化值为false</p>
+<p>引用数据类型默认初始化值为null</p>
+<p>二、构造方法</p>
+<p>1、如果没有定义构造方法，系统将给出一个默认的无参构造方法</p>
+<p>2、如果定义了构造方法，不论有参无参，系统都不会再提供默认构造方法</p>
+<p>3、带参构造和无参构造可以同名同时存在，即构造方法的重载</p>
+<p>4、无论是否使用，都推荐同时定义有参构造和无参构造</p>
+<p>三、字符串</p>
+<p>StringBuilder</p>
+<p>使用场景：</p>
+<p>1、字符串拼接</p>
+<p>2、字符串反转</p>
+<p>字符串原理：</p>
+<p>1、直接赋值会复用字符串常量池中的</p>
+<p>2、new出来不会复用，而是开辟一个新的空间</p>
+<p>3、&#x3D;&#x3D;号基本数据类型比较数据值，引用类型比较地址值</p>
+<p>4、字符串拼接时，如果没有变量参与，都是字符串直接相加，编译之后就是拼接之后的结果，会复用串池中的字符串。</p>
+<p>​		如果有变量参与，每一行拼接的代码，都会在内存中创建新的字符串，浪费内存。</p>
+<p>5、StringBuilder提高效率原理：所有要拼接的内容都会往StringBuilder中放，不会创建很多无用的空间，节约内存。</p>
+<p>6、StringBuilder源码：</p>
+<p>​		默认创建一个长度为16的字节数组，添加的内容小于16直接存入，大于16会扩容至16*2+2&#x3D;34，大于34以实际长度为准</p>
+<p>四、继承</p>
+<p>1、子类不能继承父类的构造方法</p>
+<p>2、子类能继承父类的public和private成员变量，但是不能用private成员变量</p>
+<p>3、子类能继承父类public成员方法，不能继承private、static、final成员方法（虚方法）</p>
+<p>五、多态</p>
+<p>1、多态是对象的多种形态</p>
+<p>2、多态的前提：</p>
+<p>​		①有继承&#x2F;实现关系</p>
+<p>​		②有父类引用指向子类对象</p>
+<p>​		③有方法的重写</p>
+<p>3、调用成员变量时编译和运行都看左边，即父类如果没有此变量则报错；调用成员方法时编译看左边，运行看右边，即编译代码的时候如果父类没有此方法则报		错，运行代码的时候运行的是子类中的方法</p>
+<p>4、多态的优势：方法中，使用父类型作为参数，可以接收所有子类对象</p>
+<p>5、多态的弊端：不能使用子类的特有功能</p>
+<p>6、引用数据类型的类型转换有自动类型转换和强制类型转换</p>
+<p><code>int i = 123;</code><br><code>long l = i; // 自动将int转换为long</code></p>
+<p><code>double d = 123.45;</code><br><code>int j = (int)d; // 强制将double转换为int，可能会丢失小数部分</code></p>
+<p><code>byte b = 10;</code><br><code>int k = b; // 自动将byte转换为int</code></p>
+<p><code>char c = &#39;A&#39;;</code><br><code>int m = c; // 自动将char转换为int</code></p>
+<p>强制类型转换：</p>
+<p><code>int num1 = 5; //定义一个整数变量num1并初始化为5</code><br><code>double num2 = (double) num1; //使用强制类型转换将整数num1转换成双精度浮点数num2</code><br><code>System.out.println(num2); //输出结果为5.0</code></p>
+<p>7、类型判断关键字instanceof</p>
+<p>六、static关键字</p>
+<p>java 静态变量</p>
+<p>在Java中，static关键字用于创建类级别的变量和方法，即它们不属于类的任何特定实例，而是属于类本身。</p>
+<ol>
+<li>静态变量（或类变量）</li>
+</ol>
+<p>静态变量在内存中只存在一个拷贝，不论这个类实例化了多少对象，它的静态变量只占用一份内存。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> <span class="variable">count</span> <span class="operator">=</span> <span class="number">10</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;In main, count is: &quot;</span> + count);</span><br><span class="line">        <span class="type">Test</span> <span class="variable">obj</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Test</span>();</span><br><span class="line">        obj.modifyCount();</span><br><span class="line">        System.out.println(<span class="string">&quot;Back in main, count is: &quot;</span> + count);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">modifyCount</span><span class="params">()</span> &#123;</span><br><span class="line">        count = <span class="number">20</span>;</span><br><span class="line">        System.out.println(<span class="string">&quot;In modifyCount, count is: &quot;</span> + count);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这个例子中，我们声明了一个静态变量count，并在main方法和modifyCount方法中打印它的值。当我们修改count的值后，无论是在modifyCount方法内还是main方法内，count的值都被改变了。</p>
+<ol>
+<li>静态方法</li>
+</ol>
+<p>静态方法不能使用类的非静态变量，因为非静态变量需要类的特定实例。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> <span class="variable">count</span> <span class="operator">=</span> <span class="number">10</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">modifyCount</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">// 这里会引发错误，因为不能从静态上下文中引用非静态变量 count</span></span><br><span class="line">        <span class="comment">// System.out.println(count);</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>静态方法可以访问静态变量，因为它们存储在类级别，不需要类的特定实例。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> <span class="variable">count</span> <span class="operator">=</span> <span class="number">10</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">modifyCount</span><span class="params">()</span> &#123;</span><br><span class="line">        count = <span class="number">20</span>;</span><br><span class="line">        System.out.println(<span class="string">&quot;In modifyCount, count is: &quot;</span> + count);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这个例子中，我们声明了一个静态变量count，并在modifyCount方法中修改它的值。</p>
+<p>七、抽象</p>
+<p>在Java中，一个没有具体实现的方法的类可以被定义为抽象类。这个类不能被实例化，只能被继承。继承一个抽象类的子类必须实现父类中的抽象方法。</p>
+<p>以下是一个Java抽象类的示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="keyword">class</span> <span class="title class_">Animal</span> &#123;</span><br><span class="line">    <span class="comment">// 抽象方法，没有方法体</span></span><br><span class="line">    <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title function_">makeSound</span><span class="params">()</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// 非抽象方法，有方法体</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">sleep</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;Zzz&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Dog</span> <span class="keyword">extends</span> <span class="title class_">Animal</span> &#123;</span><br><span class="line">    <span class="comment">// 实现抽象方法</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">makeSound</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;Woof&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Main</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">Dog</span> <span class="variable">dog</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Dog</span>();</span><br><span class="line">        dog.makeSound(); <span class="comment">// 输出: Woof</span></span><br><span class="line">        dog.sleep();     <span class="comment">// 输出: Zzz</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这个例子中，<code>Animal</code> 是一个抽象类，它有一个抽象方法 <code>makeSound()</code> 和一个非抽象方法 <code>sleep()</code>。<code>Dog</code> 类继承了 <code>Animal</code> 类并实现了 <code>makeSound()</code> 方法。在 <code>main</code> 方法中，我们创建了一个 <code>Dog</code> 类的实例，并调用了它的 <code>makeSound()</code> 和 <code>sleep()</code> 方法。</p>
+<p>八、适配器设计模式</p>
+<p>当一个接口中抽象方法过多，但是只要使用其中一部分时，可以定义一个中间类XXXAdapter，并重写需要用的方法，为了避免其他类创建适配器类的对象，中间的适配器类用abstract进行修饰。</p>
+<p>九、匿名内部类</p>
+<p>1、隐藏了名字的内部类，可以写在成员位置，也可以写在局部位置</p>
+<p>2、格式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">`<span class="keyword">new</span> 类名或接口名()&#123;`</span><br><span class="line">​		`重写方法;`</span><br><span class="line">`&#125;;`</span><br></pre></td></tr></table></figure>
+
+<p>3、格式的细节：包含了继承或实现，方法重写，创建对象。整体就是一个类的子类对象或者接口的实现类对象</p>
+<p>4、使用场景：当方法的参数是接口或者类时，可以传递这个接口的实现类对象或者接口的子类对象，如果实现类只要使用一次，就可以用匿名内部类简化代码。</p>
+<p>十、ArrayList集合底层原理</p>
+<p>1、利用空参创建的集合，在底层创建一个默认长度为0的数组</p>
+<p>2、添加第一个元素时，底层会创建一个新的长度为10的数组</p>
+<p>3、存满时，会扩容1.5倍</p>
+<p>4、如果一次添加多个元素，1.5被放不下，则新创建的数组长度以实际为准</p>
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/1.jpg" alt="风动留香">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>风动留香
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/2023/12/31/Java%E7%AC%94%E8%AE%B0/" target="_blank">Java笔记</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>三人行，必有我师焉.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
+                        
+                            <a href="/category/Java/">Java</a>
+                        
                     </div>
-                    <div class="tags-dark">
-                        <a href="/tags/Android/" style="font-size: 18.5px; color: #aaa">Android</a> <a href="/tags/BUG/" style="font-size: 12px; color: #666">BUG</a> <a href="/tags/ios/" style="font-size: 12px; color: #666">ios</a> <a href="/tags/%E7%AC%94%E8%AE%B0/" style="font-size: 25px; color: #eee">笔记</a> <a href="/tags/%E9%9D%A2%E8%AF%95/" style="font-size: 12px; color: #666">面试</a>
+                
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a>
+                        
                     </div>
+                
+                <div class="article-prev-next">
+                    
+                        <a href="/2024/01/10/Java%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/" class="prev-prefix">« </a> 上一篇：    <a href="/2024/01/10/Java%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/" title="发布于 2024-01-10 03:54">Java笔记（二）</a>
+                        <br>
+                    
+                    
+                        <a href="/2023/12/13/Flutter%E4%BB%BF%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90%EF%BC%88%E4%B8%89%EF%BC%89%E5%85%A8%E5%B1%80%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE%E6%A0%8F/" class="next-prefix">» </a> 下一篇：    <a href="/2023/12/13/Flutter%E4%BB%BF%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90%EF%BC%88%E4%B8%89%EF%BC%89%E5%85%A8%E5%B1%80%E9%9F%B3%E4%B9%90%E6%92%AD%E6%94%BE%E6%A0%8F/" title="发布于 2023-12-13 01:20">Flutter仿网易云音乐（三）全局音乐播放栏</a>
+                    
                 </div>
             </div>
+            
+    <div class="article-comments">
         
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
+    </div>
+    
+ 
+        </div>
     
 </div>
     <div id="footer">
@@ -100,7 +267,7 @@
                     
                         <li class=""><a href="/category" class="" target="_self"><span class="iconfont icon-folder-fill"></span>分类</a></li>
                     
-                        <li class=" active "><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
+                        <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
                     
                         <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
                     

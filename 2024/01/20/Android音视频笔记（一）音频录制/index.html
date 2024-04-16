@@ -9,7 +9,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            标签
+            Android音视频笔记（一）音频录制
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,15 +32,36 @@
 <meta name="generator" content="Hexo 7.1.1"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/page.css">
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
 <div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-subtitle">标签</h1>
+                <h1 class="header-subtitle">Android音视频笔记（一）音频录制</h1>
                 <div class="header-subinfo">
-                    <p class="article-info-text Chinese"></p>
-                    <p class="article-info-text English"></p>                  
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2024-01-20
+                        </span>
+                        
+                            
+                                <span id="/2024/01/20/Android音视频笔记（一）音频录制/" class="leancloud_visitors" data-flag-title="Android音视频笔记（一）音频录制">
+                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                                </span>
+                            
+                            
+                                <span>
+                                    <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/2024/01/20/Android音视频笔记（一）音频录制/"></span>
+                                </span>
+                              
+                        
+                    </p>
+                    
+                        
+                            <span class="category-color">Android</span>
+                        
+                    
+                    
                 </div>
             
         </div>
@@ -49,22 +70,78 @@
 </div>
 <div id="container">
     
-        <!-- 独立页面 -->
-        
-            <div class="tags">
-                <div class="tags-title">
-                    目前共计 5 个标签
-                </div>
-                <div class="tags-content">
-                    <div class="tags-light">
-                        <a href="/tags/Android/" style="font-size: 18.5px; color: #6f6f6f">Android</a> <a href="/tags/BUG/" style="font-size: 12px; color: #ccc">BUG</a> <a href="/tags/ios/" style="font-size: 12px; color: #ccc">ios</a> <a href="/tags/%E7%AC%94%E8%AE%B0/" style="font-size: 25px; color: #111">笔记</a> <a href="/tags/%E9%9D%A2%E8%AF%95/" style="font-size: 12px; color: #ccc">面试</a>
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <h3 id="一、音频录制AudioRecord"><a href="#一、音频录制AudioRecord" class="headerlink" title="一、音频录制AudioRecord"></a>一、音频录制AudioRecord</h3><p>AudioRecord录制的输出格式为PCM，这种格式不能直接播放，但是Android原生也提供了AudioTrack，这使得我们可以在软件内部实现录制播放功能。</p>
+<p>首先添加权限</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;uses-permission android:name=<span class="string">&quot;android.permission.WRITE_EXTERNAL_STORAGE&quot;</span> /&gt;</span><br><span class="line">&lt;uses-permission android:name=<span class="string">&quot;android.permission.RECORD_AUDIO&quot;</span> /&gt;</span><br><span class="line">&lt;uses-permission android:name=<span class="string">&quot;android.permission.READ_EXTERNAL_STORAGE&quot;</span> /&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">int frequency = 48000;//采样率</span><br><span class="line">int channelConfig = AudioFormat.CHANNEL_IN_MONO;//声道配置</span><br><span class="line">int audioFormat = AudioFormat.ENCODING_PCM_16BIT;//音频格式</span><br></pre></td></tr></table></figure>
+
+<p>以上是AudioRecord的参数配置。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">File audioFile;</span><br><span class="line"></span><br><span class="line"><span class="comment">//开始录制</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">record</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">	<span class="comment">//如果文件已存在则删除</span></span><br><span class="line">    <span class="keyword">if</span> (audioFile.exists()) audioFile.delete();</span><br><span class="line">    audioFile.createNewFile();</span><br><span class="line"></span><br><span class="line">    <span class="type">FileOutputStream</span> <span class="variable">fos</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(audioFile);<span class="comment">//字节输出流</span></span><br><span class="line">    <span class="type">BufferedOutputStream</span> <span class="variable">bos</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BufferedOutputStream</span>(fos);<span class="comment">//字节缓冲输出流</span></span><br><span class="line">    <span class="type">DataOutputStream</span> <span class="variable">dos</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">DataOutputStream</span>(bos);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//计算最小缓冲区</span></span><br><span class="line">    <span class="type">int</span> <span class="variable">bufferSize</span> <span class="operator">=</span> AudioRecord.getMinBufferSize(frequency, channelConfig, audioFormat);</span><br><span class="line">    <span class="type">short</span>[] buffer = <span class="keyword">new</span> <span class="title class_">short</span>[bufferSize];</span><br><span class="line">    <span class="keyword">if</span> (ActivityCompat.checkSelfPermission(<span class="built_in">this</span>, android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) &#123;</span><br><span class="line">        judgeNeedRequestMicPermission();</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">AudioRecord</span> <span class="variable">audioRecord</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AudioRecord</span>(MediaRecorder.AudioSource.MIC, frequency, channelConfig, audioFormat, bufferSize);</span><br><span class="line">    <span class="comment">//开始录制</span></span><br><span class="line">    audioRecord.startRecording();</span><br><span class="line">    recording = <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">new</span> <span class="title class_">Thread</span>(<span class="keyword">new</span> <span class="title class_">Runnable</span>() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">            <span class="keyword">while</span>(recording)&#123;</span><br><span class="line">                System.out.println(recording);</span><br><span class="line">                <span class="type">int</span> <span class="variable">bufferRead</span> <span class="operator">=</span> audioRecord.read(buffer, <span class="number">0</span>, bufferSize);</span><br><span class="line">                <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;bufferRead; i++)&#123;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        dos.writeShort(buffer[i]);</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(e);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(audioFile);</span><br><span class="line">            audioRecord.stop();</span><br><span class="line">            audioRecord.release();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                dos.close();</span><br><span class="line">                bos.close();</span><br><span class="line">                fos.close();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;).start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>recording为false时结束录制，可以自定义一个按钮修改。</p>
+<h3 id="二、音频播放AudioTrack"><a href="#二、音频播放AudioTrack" class="headerlink" title="二、音频播放AudioTrack"></a>二、音频播放AudioTrack</h3><p>AudioTrack的配置与AudioRecord基本一致，唯一要注意的是把声道配置改成 AudioFormat.CHANNEL_OUT_MONO。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> <span class="title function_">play</span><span class="params">(<span class="type">int</span> frq)</span> <span class="keyword">throws</span> IOException&#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">length</span> <span class="operator">=</span> (<span class="type">int</span>)audioFile.length()/<span class="number">2</span>;</span><br><span class="line">    <span class="keyword">if</span>(!audioFile.exists() || length==<span class="number">0</span>) &#123;</span><br><span class="line">        Toast.makeText(getBaseContext(), <span class="string">&quot;音频文件不存在或为空&quot;</span>, Toast.LENGTH_SHORT).show();</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">short</span>[] data = <span class="keyword">new</span> <span class="title class_">short</span>[length];</span><br><span class="line">    <span class="type">FileInputStream</span> <span class="variable">fis</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(audioFile);</span><br><span class="line">    <span class="type">BufferedInputStream</span> <span class="variable">bis</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BufferedInputStream</span>(fis);</span><br><span class="line">    <span class="type">DataInputStream</span> <span class="variable">dis</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">DataInputStream</span>(bis);</span><br><span class="line">    <span class="type">int</span> i=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span>(dis.available()&gt;<span class="number">0</span>) &#123;</span><br><span class="line">        data[i] = dis.readShort();</span><br><span class="line">        i++;</span><br><span class="line">    &#125;</span><br><span class="line">    dis.close();</span><br><span class="line">    bis.close();</span><br><span class="line">    fis.close();</span><br><span class="line"></span><br><span class="line">    <span class="type">AudioTrack</span> <span class="variable">audioTrack</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AudioTrack</span>(AudioManager.STREAM_MUSIC, frq,  AudioFormat.CHANNEL_OUT_MONO, audioFormat, length*<span class="number">2</span>, AudioTrack.MODE_STREAM);</span><br><span class="line">    audioTrack.play();</span><br><span class="line">    audioTrack.write(data, <span class="number">0</span>, length);</span><br><span class="line">    audioTrack.stop();</span><br><span class="line">    <span class="comment">//audioTrack.release();       // 不能马上release，因为write后是异步播放，此时还刚开始播放，release就不播放了</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>其实也没什么好总结的，本文展示的只是基本用法，AudioRecord能实现很多强大的功能，比如边录边播、语音通话等。以上内容只是对大佬们的拙劣模仿罢了，如果各位有什么其他见解，欢迎在评论区探讨。</p>
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/1.jpg" alt="风动留香">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>风动留香
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/2024/01/20/Android%E9%9F%B3%E8%A7%86%E9%A2%91%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89%E9%9F%B3%E9%A2%91%E5%BD%95%E5%88%B6/" target="_blank">Android音视频笔记（一）音频录制</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>三人行，必有我师焉.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
+                        
+                            <a href="/category/Android/">Android</a>
+                        
                     </div>
-                    <div class="tags-dark">
-                        <a href="/tags/Android/" style="font-size: 18.5px; color: #aaa">Android</a> <a href="/tags/BUG/" style="font-size: 12px; color: #666">BUG</a> <a href="/tags/ios/" style="font-size: 12px; color: #666">ios</a> <a href="/tags/%E7%AC%94%E8%AE%B0/" style="font-size: 25px; color: #eee">笔记</a> <a href="/tags/%E9%9D%A2%E8%AF%95/" style="font-size: 12px; color: #666">面试</a>
-                    </div>
+                
+                
+                <div class="article-prev-next">
+                    
+                        <a href="/2024/02/14/Flutter%E6%B7%B7%E5%90%88%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98%EF%BC%88%E4%B8%80%EF%BC%89%E9%A1%B9%E7%9B%AE%E5%AF%BC%E5%85%A5/" class="prev-prefix">« </a> 上一篇：    <a href="/2024/02/14/Flutter%E6%B7%B7%E5%90%88%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98%EF%BC%88%E4%B8%80%EF%BC%89%E9%A1%B9%E7%9B%AE%E5%AF%BC%E5%85%A5/" title="发布于 2024-02-14 07:01">Flutter混合开发实战（一）项目导入</a>
+                        <br>
+                    
+                    
+                        <a href="/2024/01/10/Java%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/" class="next-prefix">» </a> 下一篇：    <a href="/2024/01/10/Java%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89/" title="发布于 2024-01-10 03:54">Java笔记（二）</a>
+                    
                 </div>
             </div>
+            
+    <div class="article-comments">
         
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
+    </div>
+    
+ 
+        </div>
     
 </div>
     <div id="footer">
@@ -100,7 +177,7 @@
                     
                         <li class=""><a href="/category" class="" target="_self"><span class="iconfont icon-folder-fill"></span>分类</a></li>
                     
-                        <li class=" active "><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
+                        <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
                     
                         <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
                     

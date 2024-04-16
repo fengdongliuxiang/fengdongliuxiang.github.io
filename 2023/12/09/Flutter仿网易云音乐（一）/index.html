@@ -9,7 +9,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            标签
+            Flutter仿网易云音乐（一）
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,15 +32,36 @@
 <meta name="generator" content="Hexo 7.1.1"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/page.css">
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
 <div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-subtitle">标签</h1>
+                <h1 class="header-subtitle">Flutter仿网易云音乐（一）</h1>
                 <div class="header-subinfo">
-                    <p class="article-info-text Chinese"></p>
-                    <p class="article-info-text English"></p>                  
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2023-12-09
+                        </span>
+                        
+                            
+                                <span id="/2023/12/09/Flutter仿网易云音乐（一）/" class="leancloud_visitors" data-flag-title="Flutter仿网易云音乐（一）">
+                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                                </span>
+                            
+                            
+                                <span>
+                                    <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/2023/12/09/Flutter仿网易云音乐（一）/"></span>
+                                </span>
+                              
+                        
+                    </p>
+                    
+                        
+                            <span class="category-color">Flutter</span>
+                        
+                    
+                    
                 </div>
             
         </div>
@@ -49,22 +70,70 @@
 </div>
 <div id="container">
     
-        <!-- 独立页面 -->
-        
-            <div class="tags">
-                <div class="tags-title">
-                    目前共计 5 个标签
-                </div>
-                <div class="tags-content">
-                    <div class="tags-light">
-                        <a href="/tags/Android/" style="font-size: 18.5px; color: #6f6f6f">Android</a> <a href="/tags/BUG/" style="font-size: 12px; color: #ccc">BUG</a> <a href="/tags/ios/" style="font-size: 12px; color: #ccc">ios</a> <a href="/tags/%E7%AC%94%E8%AE%B0/" style="font-size: 25px; color: #111">笔记</a> <a href="/tags/%E9%9D%A2%E8%AF%95/" style="font-size: 12px; color: #ccc">面试</a>
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <p>一、首先搭建好网易云音乐api，参考链接<a target="_blank" rel="noopener" href="https://binaryify.github.io/NeteaseCloudMusicApi/#/?id=neteasecloudmusicapi%E3%80%82">https://binaryify.github.io/NeteaseCloudMusicApi/#/?id=neteasecloudmusicapi。</a></p>
+<p>二、先实现音乐播放功能，这里选择的是audioplayers插件，能通过链接播放网络音乐。由于使用了Getx插件，代码模块会和通常语法有些出入，请注意甄别。<br><code>var audioPlayer = AudioPlayer(mode: PlayerMode.MEDIA_PLAYER).obs; //音频播放器</code><br><code>var currentProgress=0.0.obs;//当前播放进度</code></p>
+<p>创建歌曲类，属性如下：<br><code>/// 歌曲详情</code><br><code>class SongsDetail &#123;</code><br><code>int? id;//歌曲唯一标识</code><br><code>String? name;//歌名</code><br><code>List&lt;Artist&gt;? ar;//上传者信息，要再创建一个数据模型</code><br><code>Al? al;//忘了是啥，里面有歌曲封面图，要再创建一个数据模型</code></p>
+<p>  <code>SongsDetail(&#123;this.id, this.name, this.ar,this.al&#125;);</code>  </p>
+<p>  <code>SongsDetail.fromJson(Map&lt;String, dynamic&gt; json) &#123;</code><br>    <code>name = json[&#39;name&#39;];</code><br>    <code>id = json[&#39;id&#39;];</code><br>    <code>if (json[&#39;ar&#39;] != null) &#123;</code><br>      <code>ar = [];</code><br>      <code>json[&#39;ar&#39;].forEach((v) &#123;</code><br>        <code>ar!.add(Artist.fromJson(v));</code><br>      <code>&#125;);</code><br>    <code>&#125;</code><br>    <code>al = Al.fromJson(json[&#39;al&#39;]);</code><br>  <code>&#125;</code><br><code>&#125;</code><br>以上为接口返回字段，具体以api返回为准。</p>
+<p><code>audioPlayer.value.setReleaseMode(ReleaseMode.LOOP);//初始化为循环播放</code></p>
+<p>三、通常情况下，音乐播放器会在全局生效，所以我们需要通过跨页面通信来获取音乐播放器的状态。这里使用event_bus插件，通过它的事件总线功能可以实现状态更新，消息传递。用法也很简单，为不同的事件定义相对应的Code值，每个事件只会相应对应值的事件，这里应用如下：<br><code>audioPlayer.value.onAudioPositionChanged.listen((event) async&#123;</code><br>  <code>int current=await audioPlayer.value.getCurrentPosition();//当前播放进度</code><br>  <code>int total=await audioPlayer.value.getDuration();//总进度</code><br>  <code>currentProgress.value=current/total;</code><br>  <code>Map map=Map();</code><br>  <code>map[&#39;current&#39;]=current.toDouble();</code><br>  <code>map[&#39;total&#39;]=total.toDouble();</code><br>  <code>eventBus.fire(EventObj(code: 10005, obj: map));</code>  <code>//广播事件</code><br><code>&#125;);</code><br>通过audioplayer自身的功能获取播放进度，然后通过eventbus广播传递，在其他页面就能通过10005这个Code值捕获这个广播事件，从而获得map值，这里用来实现其他页面的进度条功能。<br>捕获事件代码如下：<br><code>late StreamSubscription _subscription;</code><br><code>_subscription = eventBus.on().listen((event) &#123;</code><br>  <code>EventObj eventObj = event;</code><br>  <code>if (eventObj.code == 10005) &#123;</code><br>    <code>if (!controller.seeking.value) &#123;</code><br>      <code>Map map = eventObj.obj;</code><br>      <code>controller.currentDuration.value = map[&#39;current&#39;];</code><br>      <code>controller.totalDuration.value = map[&#39;total&#39;];</code><br>      <code>controller.currentDuration.refresh();</code><br>      <code>controller.totalDuration.refresh();</code><br>    <code>&#125;</code><br>  <code>&#125;</code><br><code>&#125;);</code><br>同理，播放器暂停&#x2F;开始播放时也可以通过eventbus来传递信息：<br><code>audioPlayer.value.onPlayerStateChanged.listen((event) &#123;</code><br>  <code>eventBus.fire(EventObj(code: 10003, obj: event));</code><br><code>&#125;);</code></p>
+<p>四、播放功能，首先获取歌曲id：<br><code>var dio = Dio();</code><br><code>var response = await dio.post(NeteaseCommon.server_url+&#39;/check/music?id=$&#123;searchResult.id&#125;&#39;).catchError((error) &#123;</code><br>  <code>Fluttertoast.showToast(msg: &#39;无法获取歌曲链接&#39;, toastLength: Toast.LENGTH_SHORT, backgroundColor: Colors.black);</code><br><code>&#125;);</code><br><code>if (response.data[&#39;success&#39;]) &#123;</code><br>  <code>var response = await dio.post(NeteaseCommon.server_url+&#39;/song/detail?ids=$&#123;searchResult.id&#125;&#39;).catchError((error)&#123;</code><br>    <code>Fluttertoast.showToast(msg: &#39;无法获取歌曲链接&#39;, toastLength: Toast.LENGTH_SHORT, backgroundColor: Colors.black);</code><br>  <code>&#125;);</code><br>  <code>List songsDetailList=response.data[&#39;songs&#39;];</code><br>  <code>SongsDetail songsDetail=SongsDetail.fromJson(songsDetailList[0]);</code><br>  接口返回类型自己注意，往后就不赘述了。Dio是网络请求插件，这里是最原始的用法，可以自行封装。<br>  获取歌曲信息后直接用url播放<br>  <code>audioPlayer.value.play(&#39;https://music.163.com/song/media/outer/url?id=$&#123;songsDetail.id&#125;.mp3&#39;);</code><br>  暂停播放<br>  <code>audioPlayer.value.pause().then((value) &#123;</code><br>  <code>audioPlayer.refresh();</code><br><code>&#125;);</code><br>  继续播放<br>  <code>audioPlayer.value.resume().then((value) &#123;</code><br>  <code>audioPlayer.refresh();</code><br><code>&#125;);</code><br>以上就是本篇文章的全部内容，值得注意的是，由于网易云音乐的音乐播放器是全局的，因此本项目会大量应用eventbus来传递信息，如果各位有更好的建议，欢迎评论留言，感谢观看。</p>
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/1.jpg" alt="风动留香">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>风动留香
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/2023/12/09/Flutter%E4%BB%BF%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90%EF%BC%88%E4%B8%80%EF%BC%89/" target="_blank">Flutter仿网易云音乐（一）</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>三人行，必有我师焉.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
+                        
+                            <a href="/category/Flutter/">Flutter</a>
+                        
                     </div>
-                    <div class="tags-dark">
-                        <a href="/tags/Android/" style="font-size: 18.5px; color: #aaa">Android</a> <a href="/tags/BUG/" style="font-size: 12px; color: #666">BUG</a> <a href="/tags/ios/" style="font-size: 12px; color: #666">ios</a> <a href="/tags/%E7%AC%94%E8%AE%B0/" style="font-size: 25px; color: #eee">笔记</a> <a href="/tags/%E9%9D%A2%E8%AF%95/" style="font-size: 12px; color: #666">面试</a>
-                    </div>
+                
+                
+                <div class="article-prev-next">
+                    
+                        <a href="/2023/12/10/Flutter%E4%BB%BF%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90%EF%BC%88%E4%BA%8C%EF%BC%89%E6%92%AD%E6%94%BE%E7%95%8C%E9%9D%A2/" class="prev-prefix">« </a> 上一篇：    <a href="/2023/12/10/Flutter%E4%BB%BF%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90%EF%BC%88%E4%BA%8C%EF%BC%89%E6%92%AD%E6%94%BE%E7%95%8C%E9%9D%A2/" title="发布于 2023-12-10 04:30">Flutter仿网易云音乐（二）播放界面</a>
+                        <br>
+                    
+                    
                 </div>
             </div>
+            
+    <div class="article-comments">
         
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
+    </div>
+    
+ 
+        </div>
     
 </div>
     <div id="footer">
@@ -100,7 +169,7 @@
                     
                         <li class=""><a href="/category" class="" target="_self"><span class="iconfont icon-folder-fill"></span>分类</a></li>
                     
-                        <li class=" active "><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
+                        <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
                     
                         <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
                     

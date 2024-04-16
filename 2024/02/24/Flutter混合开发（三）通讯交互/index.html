@@ -9,7 +9,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            标签
+            Flutter混合开发（三）通讯交互
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,15 +32,40 @@
 <meta name="generator" content="Hexo 7.1.1"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/page.css">
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
 <div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-subtitle">标签</h1>
+                <h1 class="header-subtitle">Flutter混合开发（三）通讯交互</h1>
                 <div class="header-subinfo">
-                    <p class="article-info-text Chinese"></p>
-                    <p class="article-info-text English"></p>                  
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2024-02-24
+                        </span>
+                        
+                            
+                                <span id="/2024/02/24/Flutter混合开发（三）通讯交互/" class="leancloud_visitors" data-flag-title="Flutter混合开发（三）通讯交互">
+                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                                </span>
+                            
+                            
+                                <span>
+                                    <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/2024/02/24/Flutter混合开发（三）通讯交互/"></span>
+                                </span>
+                              
+                        
+                    </p>
+                    
+                        
+                            <span class="category-color">Flutter</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">Android</span>
+                        
+                    
                 </div>
             
         </div>
@@ -49,22 +74,96 @@
 </div>
 <div id="container">
     
-        <!-- 独立页面 -->
-        
-            <div class="tags">
-                <div class="tags-title">
-                    目前共计 5 个标签
-                </div>
-                <div class="tags-content">
-                    <div class="tags-light">
-                        <a href="/tags/Android/" style="font-size: 18.5px; color: #6f6f6f">Android</a> <a href="/tags/BUG/" style="font-size: 12px; color: #ccc">BUG</a> <a href="/tags/ios/" style="font-size: 12px; color: #ccc">ios</a> <a href="/tags/%E7%AC%94%E8%AE%B0/" style="font-size: 25px; color: #111">笔记</a> <a href="/tags/%E9%9D%A2%E8%AF%95/" style="font-size: 12px; color: #ccc">面试</a>
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <p>书接上文，这篇文章就来简单介绍一下flutter和原生的通讯交互，首先简单介绍下flutter定义的几个通道</p>
+<ul>
+<li>BasicMessageChannel：传递字符串或半结构化信息；</li>
+<li>MethodChannel：传递方法调用（method invocation）；</li>
+<li>EventChannel：数据流（event streams）通讯。</li>
+</ul>
+<p>而这三个类的成员变量都是一致的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> BinaryMessenger messenger;<span class="comment">//用于发送二进制数据</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> String name;<span class="comment">// channel 的名字，全局唯一</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> MethodCodec codec;<span class="comment">//MessageCodec 或 MethodCodec 类型，消息的编码解码器</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> BinaryMessenger.TaskQueue taskQueue;<span class="comment">//用来调用原生Handler</span></span><br></pre></td></tr></table></figure>
+
+<p>当我们初始化一个Channel，并向该Channel注册处理消息的Handler时，实际上会生成一个与之对应的BinaryMessageHandler，并以channel name为key，注册到BinaryMessenger中。当Flutter端发送消息到BinaryMessenger时，BinaryMessenger会根据其入参channel找到对应的BinaryMessageHandler，并交由其处理。</p>
+<p>下面来简单实现下原生端代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//flutterEngine在上篇文章实现过了，这里直接引用不粘贴了</span></span><br><span class="line"><span class="keyword">new</span> <span class="title class_">MethodChannel</span>(<span class="keyword">new</span> <span class="title class_">ShimPluginRegistry</span>(flutterEngine).registrarFor(<span class="string">&quot;fengdongliuxiang&quot;</span>).messenger(), <span class="string">&quot;fengdongliuxiang&quot;</span>).setMethodCallHandler(</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">MethodChannel</span>.MethodCallHandler() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">onMethodCall</span><span class="params">(MethodCall call, MethodChannel.Result result)</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (call.method.equals(<span class="string">&quot;setText&quot;</span>)) &#123;</span><br><span class="line">                    result.success(<span class="string">&quot;我真帅&quot;</span>);</span><br><span class="line">                    System.out.println(<span class="string">&quot;发送成功&quot;</span>);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    result.notImplemented();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>接着来实现flutter端代码</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">String</span> str = <span class="string">&quot;Hello Flutter&quot;</span>;</span><br><span class="line">MethodChannel _channel = MethodChannel(<span class="string">&quot;fengdongliuxiang&quot;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="meta">@override</span></span><br><span class="line">  Widget build(BuildContext context) &#123;</span><br><span class="line">    <span class="keyword">return</span> Scaffold(</span><br><span class="line">      appBar: AppBar(</span><br><span class="line">        title: <span class="keyword">const</span> Text(<span class="string">&quot;我是flutter&quot;</span>),</span><br><span class="line">        leading: IconButton(</span><br><span class="line">        onPressed: () &#123;</span><br><span class="line">            <span class="built_in">print</span>(Navigator.defaultRouteName);</span><br><span class="line">            SystemNavigator.pop();</span><br><span class="line">          &#125;,</span><br><span class="line">          icon: <span class="keyword">const</span> Icon(Icons.chevron_left),</span><br><span class="line">        ),</span><br><span class="line">      ),</span><br><span class="line">      body: Column(</span><br><span class="line">        children: [</span><br><span class="line">          Center(</span><br><span class="line">            child: Text(str),</span><br><span class="line">          ),</span><br><span class="line">          TextButton(</span><br><span class="line">              onPressed: () &#123;</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;设置文本&quot;</span>);</span><br><span class="line">                setText();</span><br><span class="line">              &#125;,</span><br><span class="line">              child: Text(<span class="string">&#x27;设置文本&#x27;</span>))</span><br><span class="line">        ],</span><br><span class="line">      ),</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"> Future setText() <span class="keyword">async</span> &#123;</span><br><span class="line">    str = <span class="keyword">await</span> _channel.invokeMethod(<span class="string">&quot;setText&quot;</span>);</span><br><span class="line">    setState(() &#123;</span><br><span class="line">      <span class="built_in">print</span>(str);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行效果如下</p>
+<p><img src="/2024/02/24/Flutter%E6%B7%B7%E5%90%88%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%89%EF%BC%89%E9%80%9A%E8%AE%AF%E4%BA%A4%E4%BA%92/1.gif" alt="1"></p>
+<p>除此之外，也可以用实现接口的方式来创建一个类，这种写法通常用在插件制作中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.nativetest;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> android.app.Activity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> androidx.annotation.NonNull;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> io.flutter.embedding.engine.plugins.FlutterPlugin;</span><br><span class="line"><span class="keyword">import</span> io.flutter.plugin.common.MethodCall;</span><br><span class="line"><span class="keyword">import</span> io.flutter.plugin.common.MethodChannel;</span><br><span class="line"><span class="keyword">import</span> io.flutter.plugin.common.MethodChannel.MethodCallHandler;</span><br><span class="line"><span class="keyword">import</span> io.flutter.plugin.common.PluginRegistry.Registrar;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">FlutterPluginDemo</span> <span class="keyword">implements</span> <span class="title class_">FlutterPlugin</span>, MethodCallHandler &#123;</span><br><span class="line">    <span class="keyword">private</span> MethodChannel channel;</span><br><span class="line">    <span class="keyword">private</span> Activity activity;</span><br><span class="line"></span><br><span class="line">    FlutterPluginDemo(Activity activity) &#123;</span><br><span class="line">        <span class="built_in">this</span>.activity = activity;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">registerWith</span><span class="params">(Registrar registrar)</span> &#123;</span><br><span class="line">        channel = <span class="keyword">new</span> <span class="title class_">MethodChannel</span>(registrar.messenger(), <span class="string">&quot;fengdongliuxiang&quot;</span>);</span><br><span class="line">        <span class="type">FlutterPluginDemo</span> <span class="variable">instance</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FlutterPluginDemo</span>(registrar.activity());</span><br><span class="line">        <span class="comment">//setMethodCallHandler在此通道上接收方法调用的回调</span></span><br><span class="line">        channel.setMethodCallHandler(instance);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">onAttachedToEngine</span><span class="params">(<span class="meta">@NonNull</span> FlutterPluginBinding binding)</span> &#123;</span><br><span class="line">        channel = <span class="keyword">new</span> <span class="title class_">MethodChannel</span>(binding.getFlutterEngine().getDartExecutor(), <span class="string">&quot;fengdongliuxiang&quot;</span>);</span><br><span class="line">        channel.setMethodCallHandler(<span class="built_in">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">onDetachedFromEngine</span><span class="params">(<span class="meta">@NonNull</span> FlutterPluginBinding binding)</span> &#123;</span><br><span class="line">        channel.setMethodCallHandler(<span class="literal">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">onMethodCall</span><span class="params">(<span class="meta">@NonNull</span> MethodCall call, <span class="meta">@NonNull</span> MethodChannel.Result result)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (call.method.equals(<span class="string">&quot;setText&quot;</span>)) &#123;</span><br><span class="line">            result.success(<span class="string">&quot;我真帅&quot;</span>);</span><br><span class="line">            System.out.println(<span class="string">&quot;发送成功&quot;</span>);</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            result.notImplemented();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>调用如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">FlutterPluginDemo flutterPluginDemo=<span class="keyword">new</span> <span class="title class_">FlutterPluginDemo</span>(SecondPage.<span class="built_in">this</span>);</span><br><span class="line"><span class="type">ShimPluginRegistry</span> <span class="variable">shimPluginRegistry</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ShimPluginRegistry</span>(flutterEngine);</span><br><span class="line">flutterPluginDemo.registerWith(shimPluginRegistry.registrarFor(<span class="string">&quot;fengdongliuxiang&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>以上就是简单的通讯交互了，实际开发中应用到的远不止于此，更多的用法就留在以后再讨论吧，下一篇文章应该会更新Android音视频笔记系列，如果各位觉得有帮助不妨点个赞，谢谢。</p>
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/1.jpg" alt="风动留香">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>风动留香
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/2024/02/24/Flutter%E6%B7%B7%E5%90%88%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%89%EF%BC%89%E9%80%9A%E8%AE%AF%E4%BA%A4%E4%BA%92/" target="_blank">Flutter混合开发（三）通讯交互</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>三人行，必有我师焉.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
+                        
+                            <a href="/category/Flutter/">Flutter</a>
+                        
                     </div>
-                    <div class="tags-dark">
-                        <a href="/tags/Android/" style="font-size: 18.5px; color: #aaa">Android</a> <a href="/tags/BUG/" style="font-size: 12px; color: #666">BUG</a> <a href="/tags/ios/" style="font-size: 12px; color: #666">ios</a> <a href="/tags/%E7%AC%94%E8%AE%B0/" style="font-size: 25px; color: #eee">笔记</a> <a href="/tags/%E9%9D%A2%E8%AF%95/" style="font-size: 12px; color: #666">面试</a>
+                
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tags/Android/">Android</a>
+                        
                     </div>
+                
+                <div class="article-prev-next">
+                    
+                        <a href="/2024/03/12/Mac%E7%AB%AFAndroidStudio%E6%A3%80%E6%B5%8B%E4%B8%8D%E5%88%B0%E8%AE%BE%E5%A4%87%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95/" class="prev-prefix">« </a> 上一篇：    <a href="/2024/03/12/Mac%E7%AB%AFAndroidStudio%E6%A3%80%E6%B5%8B%E4%B8%8D%E5%88%B0%E8%AE%BE%E5%A4%87%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95/" title="发布于 2024-03-12 10:46">Mac端AndroidStudio检测不到设备解决办法</a>
+                        <br>
+                    
+                    
+                        <a href="/2024/02/17/Flutter%E6%B7%B7%E5%90%88%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89%E5%BC%95%E6%93%8E%E9%A2%84%E7%83%AD%E5%92%8C%E7%BC%93%E5%AD%98/" class="next-prefix">» </a> 下一篇：    <a href="/2024/02/17/Flutter%E6%B7%B7%E5%90%88%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89%E5%BC%95%E6%93%8E%E9%A2%84%E7%83%AD%E5%92%8C%E7%BC%93%E5%AD%98/" title="发布于 2024-02-17 10:58">Flutter混合开发实战（二）引擎预热和缓存</a>
+                    
                 </div>
             </div>
+            
+    <div class="article-comments">
         
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
+    </div>
+    
+ 
+        </div>
     
 </div>
     <div id="footer">
@@ -100,7 +199,7 @@
                     
                         <li class=""><a href="/category" class="" target="_self"><span class="iconfont icon-folder-fill"></span>分类</a></li>
                     
-                        <li class=" active "><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
+                        <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
                     
                         <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
                     

@@ -9,7 +9,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            标签
+            Flutter混合开发实战（二）引擎预热和缓存
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,15 +32,40 @@
 <meta name="generator" content="Hexo 7.1.1"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/page.css">
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
 <div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-subtitle">标签</h1>
+                <h1 class="header-subtitle">Flutter混合开发实战（二）引擎预热和缓存</h1>
                 <div class="header-subinfo">
-                    <p class="article-info-text Chinese"></p>
-                    <p class="article-info-text English"></p>                  
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2024-02-17
+                        </span>
+                        
+                            
+                                <span id="/2024/02/17/Flutter混合开发实战（二）引擎预热和缓存/" class="leancloud_visitors" data-flag-title="Flutter混合开发实战（二）引擎预热和缓存">
+                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                                </span>
+                            
+                            
+                                <span>
+                                    <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/2024/02/17/Flutter混合开发实战（二）引擎预热和缓存/"></span>
+                                </span>
+                              
+                        
+                    </p>
+                    
+                        
+                            <span class="category-color">Flutter</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">Android</span>
+                        
+                    
                 </div>
             
         </div>
@@ -49,22 +74,100 @@
 </div>
 <div id="container">
     
-        <!-- 独立页面 -->
-        
-            <div class="tags">
-                <div class="tags-title">
-                    目前共计 5 个标签
-                </div>
-                <div class="tags-content">
-                    <div class="tags-light">
-                        <a href="/tags/Android/" style="font-size: 18.5px; color: #6f6f6f">Android</a> <a href="/tags/BUG/" style="font-size: 12px; color: #ccc">BUG</a> <a href="/tags/ios/" style="font-size: 12px; color: #ccc">ios</a> <a href="/tags/%E7%AC%94%E8%AE%B0/" style="font-size: 25px; color: #111">笔记</a> <a href="/tags/%E9%9D%A2%E8%AF%95/" style="font-size: 12px; color: #ccc">面试</a>
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <p>上文介绍了原生跳转Flutter页面的基本方法，即</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">startActivity(</span><br><span class="line">     FlutterActivity.createDefaultIntent(currentActivity)</span><br><span class="line">   );</span><br></pre></td></tr></table></figure>
+
+<p>但是这样跳转只会跳转至Flutter的main入口处，现在介绍如何跳转至其他路由。</p>
+<p>首先得在flutter模组中创建一个dart文件用来存储路由表，命名为routes.dart，文件代码如下</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">String</span> homePage = <span class="string">&quot;/&quot;</span>;</span><br><span class="line"><span class="built_in">String</span> secondPage = <span class="string">&quot;/secondPage&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">final</span> routes = &#123;</span><br><span class="line">  homePage: (context) =&gt; <span class="keyword">const</span> MyApp(),</span><br><span class="line">  secondPage: (context) =&gt; <span class="keyword">const</span> DemoPage()</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//下面这段代码是将一个匿名方法赋值给一个变量</span></span><br><span class="line"><span class="comment">//匿名方法做的事情：处理路由传参，生成 MaterialPageRoute 路由对象</span></span><br><span class="line"><span class="keyword">var</span> onGenerateRoute = (settings) &#123;</span><br><span class="line">  <span class="built_in">Function?</span> pageContentBuilder = routes[settings.name];</span><br><span class="line">  <span class="keyword">if</span> (pageContentBuilder != <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (settings.arguments != <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="keyword">var</span> route = MaterialPageRoute(</span><br><span class="line">          builder: (context) =&gt;</span><br><span class="line">              pageContentBuilder(context, arguments: settings.arguments));</span><br><span class="line">      <span class="keyword">return</span> route;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">var</span> route =</span><br><span class="line">      MaterialPageRoute(builder: (context) =&gt; pageContentBuilder(context));</span><br><span class="line">      <span class="keyword">return</span> route;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>然后修改main()函数如下</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> main() =&gt; runApp(MaterialApp(   <span class="comment">//app 启动路由页面</span></span><br><span class="line">  initialRoute: homePage,</span><br><span class="line">  <span class="comment">//路由生成</span></span><br><span class="line">  onGenerateRoute: onGenerateRoute,));</span><br></pre></td></tr></table></figure>
+
+<p>这里的初始入口仍然是flutter的初始页面，但是通过onGenerateRoute方法已经配置好了其他页面的路由，所以我们只需要在原生代码中传入指定页面的路由就能跳转了，以下是原生端的代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">startActivity(</span><br><span class="line">        FlutterActivity</span><br><span class="line">                .withNewEngine()</span><br><span class="line">                .initialRoute(<span class="string">&quot;/secondPage&quot;</span>)</span><br><span class="line">                .build(currentActivity)<span class="comment">//currentActivity替换为当前Activity</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>但是这样子有一个致命缺陷，从按下跳转键到完全跳转过去花费了大概五六秒的时间，这在实际开发中自然是不被允许的，因此有了FlutterEngine，先声明引擎</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> FlutterEngine flutterEngine;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">preWarm</span><span class="params">()</span>&#123;</span><br><span class="line">        flutterEngine = <span class="keyword">new</span> <span class="title class_">FlutterEngine</span>(<span class="built_in">this</span>);</span><br><span class="line">        <span class="comment">//设置初始化路由</span></span><br><span class="line">        flutterEngine.getNavigationChannel().setInitialRoute(<span class="string">&quot;/secondPage&quot;</span>);</span><br><span class="line">        <span class="comment">// 开始执行Dart模块预热引擎</span></span><br><span class="line">        flutterEngine.getDartExecutor().executeDartEntrypoint(</span><br><span class="line">                DartExecutor.DartEntrypoint.createDefault()</span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 缓存引擎</span></span><br><span class="line">        FlutterEngineCache</span><br><span class="line">                .getInstance()</span><br><span class="line">                .put(<span class="string">&quot;my_engine_id&quot;</span>, flutterEngine);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后在onCreate()方法中调用，就能达到提前预热的效果，这样在执行跳转时耗时会大大缩短。下面是跳转代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">startActivity(</span><br><span class="line">        FlutterActivity</span><br><span class="line">                .withCachedEngine(<span class="string">&quot;my_engine_id&quot;</span>)</span><br><span class="line">                .build(SecondPage.<span class="built_in">this</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>要注意的是，预热也是需要时间的，如果刚执行预热代码就马上跳转flutter页面，花费的时间与之前无异，但是缓存机制另一个好处就是第二次开始的跳转时间都会大幅缩短。而这样做的代价就是性能的消耗了，以下是官方文档原话：</p>
+<p><strong>当使用一个缓存的 <code>FlutterEngine</code> 时， <code>FlutterEngine</code> 会比展示它的 <code>FlutterActivity</code> 或 <code>FlutterFragment</code> 存活得更久。切记，Dart 代码会在你预热 <code>FlutterEngine</code> 时就开始执行，并且在你的 <code>FlutterActivity</code> 或 <code>FlutterFragment</code> 销毁后继续运行。要停止代码运行和清理相关资源，可以从 <code>FlutterEngineCache</code> 中获取你的 <code>FlutterEngine</code>，然后使用 <code>FlutterEngine.destroy()</code> 来销毁 <code>FlutterEngine</code>。</strong></p>
+<p><strong>运行时的性能考量并不是你会预热和缓存一个 <code>FlutterEngine</code> 的唯一原因。一个预热的 <code>FlutterEngine</code> 会独立于 <code>FlutterActivity</code> 执行 Dart 代码，即一个 <code>FlutterEngine</code> 可以在任意时刻用于执行任意代码。非 UI 的应用逻辑可以在 <code>FlutterEngine</code> 中执行，例如网络请求和数据缓存，以及在 <code>Service</code> 中或其他地方的后台行为。当使用 <code>FlutterEngine</code> 在后台执行任务时，确保满足 Android 对于后台执行的所有限制。</strong></p>
+<p>并且，在原生和flutter之间进行跳转时，路由的变化是一个非常值得注意的点，举个例子，<strong>按照文中flutter路由表的定义方法来</strong>，原生界面是A，flutter界面有两个，分别是初始页面面B、第二个页面C，当我从A跳转至C时，B因为是main函数的初始页面，它其实也是被添加进了路由表的，这就导致了一个问题，当我在C页面调用flutter的Navigator.pop时，回到的页面不是A而是B，而在B调用pop方法则会直接黑屏，因为pop是flutter的路由方法，不能用它回到原生页面中，除非是使用手机自带的返回功能。并且，用这种方法回到了A界面后，再次调用同一个引擎跳转flutter界面时，即便你之前配置的初始化路由是C页面，此时跳转的界面仍然是B，因为缓存的引擎并没有被释放，它仍然停留在最后一次展示的flutter界面即B，故而再次调用时初始页面是B而不是C。原因是因为”&#x2F;“，这里附上国外网友的回答：</p>
+<p><strong>Here is extract from the documentation:</strong></p>
+<p><strong>If the route name starts with a slash, then it is treated as a “deep link”, and before this route is pushed, the routes leading to this one are pushed also. Even if the route was just &#x2F;a, the app would start with &#x2F; and &#x2F;a loaded. <a target="_blank" rel="noopener" href="https://api.flutter.dev/flutter/material/MaterialApp/initialRoute.html">https://api.flutter.dev/flutter/material/MaterialApp/initialRoute.html</a></strong></p>
+<p><strong>You could try re-naming your ‘&#x2F;settings’ route to ‘settings’.</strong></p>
+<p>简单翻译一下就是，当你的路由表里使用了”&#x2F;“时，flutter是把它当作深链接来处理的，即指向这个页面的页面也会被添加进路由表，这就是为什么我们只添加了C页面路由里却有B的原因，解决办法也很简单，在路由表里把”&#x2F;secondPage”改成”secondPage”就行了。</p>
+<p>但是还有一个问题没解决，即便flutter的路由表里只有一个页面了，调用Navigator.pop仍然无法回到原生页面，这时候就需要用到系统层级的返回方法了，即SystemNavigator.pop()。</p>
+<p>这篇文章就记录到这里了，下一篇文章就记录原生和flutter的通讯交互了。</p>
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/1.jpg" alt="风动留香">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>风动留香
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/2024/02/17/Flutter%E6%B7%B7%E5%90%88%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98%EF%BC%88%E4%BA%8C%EF%BC%89%E5%BC%95%E6%93%8E%E9%A2%84%E7%83%AD%E5%92%8C%E7%BC%93%E5%AD%98/" target="_blank">Flutter混合开发实战（二）引擎预热和缓存</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>三人行，必有我师焉.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
+                        
+                            <a href="/category/Flutter/">Flutter</a>
+                        
                     </div>
-                    <div class="tags-dark">
-                        <a href="/tags/Android/" style="font-size: 18.5px; color: #aaa">Android</a> <a href="/tags/BUG/" style="font-size: 12px; color: #666">BUG</a> <a href="/tags/ios/" style="font-size: 12px; color: #666">ios</a> <a href="/tags/%E7%AC%94%E8%AE%B0/" style="font-size: 25px; color: #eee">笔记</a> <a href="/tags/%E9%9D%A2%E8%AF%95/" style="font-size: 12px; color: #666">面试</a>
+                
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tags/Android/">Android</a>
+                        
                     </div>
+                
+                <div class="article-prev-next">
+                    
+                        <a href="/2024/02/24/Flutter%E6%B7%B7%E5%90%88%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%89%EF%BC%89%E9%80%9A%E8%AE%AF%E4%BA%A4%E4%BA%92/" class="prev-prefix">« </a> 上一篇：    <a href="/2024/02/24/Flutter%E6%B7%B7%E5%90%88%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%89%EF%BC%89%E9%80%9A%E8%AE%AF%E4%BA%A4%E4%BA%92/" title="发布于 2024-02-24 10:26">Flutter混合开发（三）通讯交互</a>
+                        <br>
+                    
+                    
+                        <a href="/2024/02/15/Flutter%E6%B7%B7%E5%90%88%E5%BC%80%E5%8F%91BUG%E6%95%B4%E7%90%86/" class="next-prefix">» </a> 下一篇：    <a href="/2024/02/15/Flutter%E6%B7%B7%E5%90%88%E5%BC%80%E5%8F%91BUG%E6%95%B4%E7%90%86/" title="发布于 2024-02-15 05:27">Flutter混合开发BUG整理</a>
+                    
                 </div>
             </div>
+            
+    <div class="article-comments">
         
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
+    </div>
+    
+ 
+        </div>
     
 </div>
     <div id="footer">
@@ -100,7 +203,7 @@
                     
                         <li class=""><a href="/category" class="" target="_self"><span class="iconfont icon-folder-fill"></span>分类</a></li>
                     
-                        <li class=" active "><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
+                        <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
                     
                         <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
                     

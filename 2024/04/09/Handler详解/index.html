@@ -9,7 +9,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            标签
+            Handler详解
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,15 +32,40 @@
 <meta name="generator" content="Hexo 7.1.1"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/page.css">
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
 <div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-subtitle">标签</h1>
+                <h1 class="header-subtitle">Handler详解</h1>
                 <div class="header-subinfo">
-                    <p class="article-info-text Chinese"></p>
-                    <p class="article-info-text English"></p>                  
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2024-04-09
+                        </span>
+                        
+                            
+                                <span id="/2024/04/09/Handler详解/" class="leancloud_visitors" data-flag-title="Handler详解">
+                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                                </span>
+                            
+                            
+                                <span>
+                                    <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/2024/04/09/Handler详解/"></span>
+                                </span>
+                              
+                        
+                    </p>
+                    
+                        
+                            <span class="category-color">Android</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">笔记</span>
+                        
+                    
                 </div>
             
         </div>
@@ -49,22 +74,98 @@
 </div>
 <div id="container">
     
-        <!-- 独立页面 -->
-        
-            <div class="tags">
-                <div class="tags-title">
-                    目前共计 5 个标签
-                </div>
-                <div class="tags-content">
-                    <div class="tags-light">
-                        <a href="/tags/Android/" style="font-size: 18.5px; color: #6f6f6f">Android</a> <a href="/tags/BUG/" style="font-size: 12px; color: #ccc">BUG</a> <a href="/tags/ios/" style="font-size: 12px; color: #ccc">ios</a> <a href="/tags/%E7%AC%94%E8%AE%B0/" style="font-size: 25px; color: #111">笔记</a> <a href="/tags/%E9%9D%A2%E8%AF%95/" style="font-size: 12px; color: #ccc">面试</a>
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <p><strong>Handler：处理者，负责Message的发送及处理。使用Handler时，需要实现handleMessage(Message msg)方法来对特定的Message进行处理，例如更新UI等。new Handler()相当于创建一个处理者。</strong></p>
+<p><strong>Message：消息，其中包含了消息ID，消息处理对象以及处理的数据等，由MessageQueue统一列队，终由Handler处理。new Message()相当于创建一个Message对象，存储数据为后面数据发送（任务分配）做准备</strong></p>
+<p><strong>MessageQueue：消息队列，用来存放Handler发送过来的消息，并按照FIFO（先进先出）规则执行。当然，存放Message并非实际意义的保存，而是将Message以链表的方式串联起来的，等待Looper的抽取。looper下面会说</strong></p>
+<p><strong>Looper：循环器，应用启动时就在ActivityThread.java的main函数中创建了，会不停地从MessageQueue中抓取Message，交付给对应的Handler解包(dispatch)</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Handler mHandler=<span class="keyword">new</span> <span class="title class_">Handler</span>(msg -&gt; &#123;</span><br><span class="line">    <span class="keyword">if</span> (msg.what == <span class="number">2</span>) &#123;</span><br><span class="line">        textView.setText((String) msg.obj);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"> Message msg=mHandler.obtainMessage(<span class="number">2</span>,num);</span><br><span class="line"> mHandler.sendMessage(msg);</span><br></pre></td></tr></table></figure>
+
+<p>其他用法</p>
+<p>1、在子线程刷新UI</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Thread thread= <span class="keyword">new</span> <span class="title class_">Thread</span>(<span class="keyword">new</span> <span class="title class_">Runnable</span>() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">        handler=<span class="keyword">new</span> <span class="title class_">Handler</span>(Looper.getMainLooper());</span><br><span class="line">        handler.post(<span class="keyword">new</span> <span class="title class_">Runnable</span>() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">                textView.setText(<span class="string">&quot;5464654&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line">thread.start();</span><br></pre></td></tr></table></figure>
+
+<p>2、子线程使用handler</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> <span class="title class_">Thread</span>(<span class="keyword">new</span> <span class="title class_">Runnable</span>() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">Message</span> <span class="variable">message</span> <span class="operator">=</span> mHandler.obtainMessage(<span class="number">1</span>,<span class="string">&quot;114514&quot;</span>);</span><br><span class="line">        mHandler.sendMessage(message);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;).start();</span><br></pre></td></tr></table></figure>
+
+<p>post()方法传递的是一个Runnable对象用来执行业务代码，在源码的实现中和sendMessage调用的同一个方法sendMessageDelayed(),这个方法传递的参数是一个Message对象，但是为什么post传递了一个Runnable对象也能调用sendMessageDelayed()呢，因为它在传递的时候做了一个转换，以下是源码实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Message <span class="title function_">getPostMessage</span><span class="params">(Runnable r)</span> &#123;</span><br><span class="line">    <span class="type">Message</span> <span class="variable">m</span> <span class="operator">=</span> Message.obtain();</span><br><span class="line">    m.callback = r;</span><br><span class="line">    <span class="keyword">return</span> m;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，虽然传入的是一个Runnable对象，但是实际返回的是一个新的Message对象，并且Runnable对象赋值给了Message对象的callback属性。然后就是和sendMessage一样的送入了消息队列。而当Looper捕获到这个post传递的Message对象时会进行一次callback的非空判断：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">dispatchMessage</span><span class="params">(<span class="meta">@NonNull</span> Message msg)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (msg.callback != <span class="literal">null</span>) &#123;</span><br><span class="line">        handleCallback(msg);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (mCallback != <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (mCallback.handleMessage(msg)) &#123;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        handleMessage(msg);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当callback不为空时，会调用handleCallback方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">handleCallback</span><span class="params">(Message message)</span> &#123;</span><br><span class="line">    message.callback.run();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>而handleCallback也很简单，就是马上执行Runnable。</p>
+<h5 id="内存泄漏"><a href="#内存泄漏" class="headerlink" title="内存泄漏"></a>内存泄漏</h5><p>  1、handler创建时候就对持有当前Activity得引用，同时message持有对handler的引用。MessageQueue持有Message；Message持有了Handler；handler是匿名内部类，持有this Activity，Activity持有大量内存，就会造成内存泄漏。</p>
+<p>  2、 发送一个延迟消息时候，消息被处理前，该消息一直保存在消息队列中，在持续保存这段时间，messageque持有对message的引用，Message持有了handler；在我们的activity中建立一个Handler的实例，该handler实例默认持有了外部的对象acticity的引用，当我们调用acticity的ondestroy方法时，activity销毁了，但是根据可达性分析，我们的需要的activity存在被handler引用，只要handler不被释放，activity就不会销毁，就造成了内存泄漏。</p>
+<p><strong>解决该办法的两个方法：</strong></p>
+<p>1、将handler变为static，就会不会引用activity，因为静态内部类不会持有外部的类的引用。 2、使用弱引用weakreference持有activity；垃圾回收器在回收过程中，不管内存空间够与否，都将弱引用对象进行回收。 3、在外部结束生命周期的ondestroy方法中，清除消息队列中的消息；只要清除该msg，引用就会断开，避免内存泄漏。调用这个方法mHandler.removeCallbacksAndMessages(null)</p>
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/1.jpg" alt="风动留香">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>风动留香
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/2024/04/09/Handler%E8%AF%A6%E8%A7%A3/" target="_blank">Handler详解</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>三人行，必有我师焉.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
+                        
+                            <a href="/category/Android/">Android</a>
+                        
                     </div>
-                    <div class="tags-dark">
-                        <a href="/tags/Android/" style="font-size: 18.5px; color: #aaa">Android</a> <a href="/tags/BUG/" style="font-size: 12px; color: #666">BUG</a> <a href="/tags/ios/" style="font-size: 12px; color: #666">ios</a> <a href="/tags/%E7%AC%94%E8%AE%B0/" style="font-size: 25px; color: #eee">笔记</a> <a href="/tags/%E9%9D%A2%E8%AF%95/" style="font-size: 12px; color: #666">面试</a>
+                
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a>
+                        
                     </div>
+                
+                <div class="article-prev-next">
+                    
+                        <a href="/2024/04/16/Flutter%E8%85%BE%E8%AE%AF%E9%9D%A2%E7%BB%8F/" class="prev-prefix">« </a> 上一篇：    <a href="/2024/04/16/Flutter%E8%85%BE%E8%AE%AF%E9%9D%A2%E7%BB%8F/" title="发布于 2024-04-16 10:25">Flutter腾讯面经</a>
+                        <br>
+                    
+                    
+                        <a href="/2024/04/08/Dart%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/" class="next-prefix">» </a> 下一篇：    <a href="/2024/04/08/Dart%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89/" title="发布于 2024-04-08 05:51">Flutter笔记（一）</a>
+                    
                 </div>
             </div>
+            
+    <div class="article-comments">
         
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
+    </div>
+    
+ 
+        </div>
     
 </div>
     <div id="footer">
@@ -100,7 +201,7 @@
                     
                         <li class=""><a href="/category" class="" target="_self"><span class="iconfont icon-folder-fill"></span>分类</a></li>
                     
-                        <li class=" active "><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
+                        <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
                     
                         <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
                     
